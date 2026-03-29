@@ -1,0 +1,3564 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EyeNav - Prototipo Visual de Landing</title>
+    <meta name="description"
+        content="Landing conceptual para EyeNav, lentes inteligentes con IA que ayudan a personas con discapacidad visual a navegar entornos urbanos de forma autónoma.">
+    <link rel="icon" href="data:,">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script>
+        document.documentElement.classList.add('js');
+    </script>
+    <style>
+        :root {
+            --text: #151821;
+            --muted: #58606d;
+            --muted-light: rgba(231, 238, 246, 0.74);
+            --accent: #c96f4f;
+            --accent-dark: #9f5339;
+            --signal: #2c6d7d;
+            --signal-soft: rgba(44, 109, 125, 0.12);
+            --shadow: 0 28px 70px -34px rgba(16, 23, 29, 0.42);
+            --radius-xl: 34px;
+            --container: min(1160px, calc(100vw - 40px));
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Manrope", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(255, 205, 163, 0.55), transparent 32%),
+                radial-gradient(circle at 82% 14%, rgba(83, 133, 147, 0.22), transparent 24%),
+                linear-gradient(180deg, #f4ede5 0%, #f7f3ee 22%, #fffdf9 62%, #fcfbf9 100%);
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: auto;
+            pointer-events: none;
+            z-index: -1;
+            border-radius: 999px;
+            filter: blur(90px);
+            opacity: 0.7;
+        }
+
+        body::before {
+            width: 360px;
+            height: 360px;
+            top: 80px;
+            right: -120px;
+            background: rgba(201, 111, 79, 0.2);
+        }
+
+        body::after {
+            width: 300px;
+            height: 300px;
+            left: -80px;
+            bottom: 160px;
+            background: rgba(44, 109, 125, 0.18);
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .container {
+            width: var(--container);
+            margin: 0 auto;
+        }
+
+        .section {
+            padding: 120px 0;
+        }
+
+        .section-tight {
+            padding-top: 90px;
+            padding-bottom: 90px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(201, 111, 79, 0.22);
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--accent-dark);
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            box-shadow: 0 18px 42px -32px rgba(34, 38, 45, 0.55);
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #e49777 0%, #b45b3f 100%);
+            box-shadow: 0 0 0 5px rgba(201, 111, 79, 0.1);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin: 0;
+            font-family: "Sora", sans-serif;
+            letter-spacing: -0.04em;
+        }
+
+        p {
+            margin: 0;
+            line-height: 1.75;
+            color: var(--muted);
+        }
+
+        .site-header {
+            position: sticky;
+            top: 18px;
+            z-index: 30;
+            padding-top: 18px;
+        }
+
+        .site-header.is-scrolled .header-shell {
+            background: rgba(255, 253, 248, 0.9);
+            border-color: rgba(19, 24, 31, 0.09);
+            box-shadow: 0 24px 50px -38px rgba(19, 24, 31, 0.6);
+        }
+
+        .header-shell {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 14px 18px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            backdrop-filter: blur(16px);
+            transition: background-color 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            font-family: "Sora", sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-mark {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent 42%),
+                linear-gradient(145deg, rgba(201, 111, 79, 0.22), rgba(44, 109, 125, 0.18));
+            border: 1px solid rgba(19, 24, 31, 0.06);
+        }
+
+        .brand-mark svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            font-size: 0.96rem;
+            color: var(--muted);
+        }
+
+        .nav a {
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .nav a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 100%;
+            height: 2px;
+            transform: scaleX(0);
+            transform-origin: left;
+            background: linear-gradient(90deg, var(--accent) 0%, rgba(201, 111, 79, 0) 100%);
+            transition: transform 0.24s ease;
+        }
+
+        .nav a:hover,
+        .nav a:focus-visible {
+            color: var(--text);
+        }
+
+        .nav a:hover::after,
+        .nav a:focus-visible::after {
+            transform: scaleX(1);
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 54px;
+            padding: 0 26px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            transition: transform 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease, border-color 0.22s ease;
+        }
+
+        .button:hover,
+        .button:focus-visible {
+            transform: translateY(-2px);
+        }
+
+        .button-primary {
+            color: #fff9f5;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            box-shadow: 0 20px 36px -22px rgba(159, 83, 57, 0.75);
+        }
+
+        .button-secondary {
+            color: var(--text);
+            border-color: rgba(19, 24, 31, 0.09);
+            background: rgba(255, 255, 255, 0.52);
+        }
+
+        .hero {
+            padding-top: 78px;
+            padding-bottom: 70px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.02fr) minmax(380px, 0.98fr);
+            align-items: center;
+            gap: 60px;
+        }
+
+        .hero-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .hero-copy h1 {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            line-height: 0.95;
+            max-width: 10ch;
+        }
+
+        .hero-copy p {
+            max-width: 58ch;
+            font-size: 1.1rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-top: 8px;
+        }
+
+        .hero-meta {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            padding-top: 16px;
+        }
+
+        .hero-metric {
+            padding: 20px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            box-shadow: 0 20px 38px -34px rgba(19, 24, 31, 0.55);
+        }
+
+        .hero-metric strong {
+            display: block;
+            margin-bottom: 6px;
+            font-family: "Sora", sans-serif;
+            font-size: 0.98rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-metric span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.94rem;
+            line-height: 1.6;
+        }
+
+        .hero-visual {
+            display: grid;
+            gap: 22px;
+        }
+
+        .device-stage {
+            position: relative;
+            --hero-chip-rgb: 44, 109, 125;
+            --hero-chip-soft: 240, 248, 250;
+            display: grid;
+            gap: 18px;
+            align-content: start;
+            min-height: 0;
+            padding: 30px;
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            background:
+                linear-gradient(160deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 244, 239, 0.86) 100%);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .device-stage::before,
+        .device-stage::after {
+            content: "";
+            position: absolute;
+            inset: auto;
+            border-radius: 999px;
+            filter: blur(0.4px);
+            z-index: -1;
+        }
+
+        .device-stage::before {
+            width: 520px;
+            height: 520px;
+            top: -160px;
+            right: -120px;
+            background: radial-gradient(circle, rgba(201, 111, 79, 0.2) 0%, rgba(201, 111, 79, 0) 66%);
+        }
+
+        .device-stage::after {
+            width: 440px;
+            height: 440px;
+            left: -120px;
+            bottom: -180px;
+            background: radial-gradient(circle, rgba(44, 109, 125, 0.18) 0%, rgba(44, 109, 125, 0) 66%);
+        }
+
+        .urban-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(21, 24, 33, 0.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(21, 24, 33, 0.045) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), transparent 92%);
+            opacity: 0.42;
+        }
+
+        .stage-orbit {
+            position: absolute;
+            inset: 50% auto auto 50%;
+            border-radius: 50%;
+            border: 1px dashed rgba(44, 109, 125, 0.12);
+            transform: translate(-50%, -50%);
+            opacity: 0.55;
+        }
+
+        .orbit-a {
+            width: 320px;
+            height: 320px;
+        }
+
+        .orbit-b {
+            width: 450px;
+            height: 450px;
+            border-color: rgba(201, 111, 79, 0.14);
+        }
+
+        .hero-viewer {
+            position: relative;
+            width: 100%;
+            min-height: 404px;
+            margin: 0;
+            border-radius: 30px;
+            overflow: hidden;
+            background:
+                linear-gradient(168deg, rgba(255, 255, 255, 0.98), rgba(247, 243, 239, 0.96));
+            box-shadow:
+                0 32px 54px -34px rgba(17, 22, 29, 0.48),
+                inset 0 0 0 1px rgba(19, 24, 31, 0.06);
+            z-index: 2;
+        }
+
+        .hero-viewer::before,
+        .hero-viewer::after {
+            content: "";
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .hero-viewer::before {
+            inset: 14px;
+            border-radius: 24px;
+            background:
+                linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(253, 251, 248, 0.58));
+            box-shadow:
+                inset 0 0 0 1px rgba(19, 24, 31, 0.04),
+                0 20px 28px -30px rgba(19, 24, 31, 0.24);
+        }
+
+        .hero-viewer::after {
+            width: 300px;
+            height: 300px;
+            right: -54px;
+            bottom: -72px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--hero-tone, 111, 227, 255), 0.12) 0%, rgba(var(--hero-tone, 111, 227, 255), 0) 72%);
+            filter: blur(10px);
+        }
+
+        .hero-mode-switch {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            z-index: 5;
+            display: inline-flex;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            box-shadow: 0 18px 28px -24px rgba(18, 27, 36, 0.52);
+            backdrop-filter: blur(14px);
+        }
+
+        .hero-mode-button {
+            appearance: none;
+            border: 0;
+            border-radius: 999px;
+            padding: 11px 16px;
+            background: transparent;
+            color: var(--muted);
+            font-family: "Sora", sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: background-color 0.22s ease, color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .hero-mode-button:hover,
+        .hero-mode-button:focus-visible {
+            color: var(--text);
+            transform: translateY(-1px);
+        }
+
+        .hero-mode-button.is-active {
+            color: #fffaf6;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            box-shadow: 0 16px 26px -18px rgba(159, 83, 57, 0.85);
+        }
+
+        .hero-device-fallback {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 44px 52px 72px;
+            filter: drop-shadow(0 24px 40px rgba(21, 24, 33, 0.2));
+            transition: opacity 0.38s ease, transform 0.38s ease;
+        }
+
+        .hero-viewer.is-ready .hero-device-fallback {
+            opacity: 0;
+            transform: scale(0.97);
+        }
+
+        #heroEyeNavCanvas {
+            position: absolute;
+            inset: 0;
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            cursor: grab;
+            z-index: 2;
+        }
+
+        #heroEyeNavCanvas:active {
+            cursor: grabbing;
+        }
+
+        .hero-viewer-caption {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 18px 20px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(249, 246, 241, 0.92));
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            box-shadow: 0 22px 34px -28px rgba(18, 27, 36, 0.28);
+        }
+
+        .hero-viewer-copy {
+            display: grid;
+            gap: 6px;
+            max-width: 34ch;
+        }
+
+        .hero-viewer-copy small,
+        .hero-viewer-status small {
+            color: var(--signal);
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .hero-viewer-copy strong,
+        .hero-viewer-status span {
+            font-family: "Sora", sans-serif;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-viewer-copy strong {
+            font-size: 0.98rem;
+        }
+
+        .hero-viewer-copy span {
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.54;
+        }
+
+        .hero-viewer-status {
+            display: grid;
+            gap: 6px;
+            text-align: right;
+            min-width: 172px;
+        }
+
+        .hero-viewer-status span {
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        .hero-signal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .info-chip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-start;
+            min-height: 64px;
+            padding: 16px 18px;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(var(--hero-chip-soft), 0.94));
+            border: 1px solid rgba(var(--hero-chip-rgb), 0.14);
+            color: var(--text);
+            font-size: 0.87rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            box-shadow:
+                0 20px 30px -30px rgba(21, 24, 33, 0.34),
+                0 10px 20px -22px rgba(var(--hero-chip-rgb), 0.24);
+            transition: border-color 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
+            z-index: 1;
+            pointer-events: auto;
+            animation: none;
+        }
+
+        .info-chip::before {
+            content: "";
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: rgb(var(--hero-chip-rgb));
+            box-shadow: 0 0 0 5px rgba(var(--hero-chip-rgb), 0.14);
+        }
+
+        .info-chip.is-active {
+            border-color: rgba(var(--hero-chip-rgb), 0.28);
+            box-shadow:
+                0 22px 34px -30px rgba(21, 24, 33, 0.32),
+                0 14px 24px -22px rgba(var(--hero-chip-rgb), 0.4);
+        }
+
+        .chip-top {
+            top: auto;
+            left: auto;
+        }
+
+        .chip-left {
+            top: auto;
+            left: auto;
+            bottom: auto;
+        }
+
+        .chip-bottom {
+            right: auto;
+            bottom: auto;
+        }
+
+        .visual-stack {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .visual-card {
+            padding: 22px;
+            border-radius: 22px;
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            background: rgba(255, 255, 255, 0.68);
+            box-shadow: 0 22px 36px -34px rgba(18, 27, 36, 0.65);
+        }
+
+        .visual-card strong {
+            display: block;
+            margin-bottom: 8px;
+            font-family: "Sora", sans-serif;
+            font-size: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .visual-card p {
+            font-size: 0.95rem;
+        }
+
+        .visual-card.accent {
+            background: linear-gradient(135deg, rgba(201, 111, 79, 0.12) 0%, rgba(201, 111, 79, 0.05) 100%);
+        }
+
+        .ticker {
+            padding: 18px 0;
+            border-top: 1px solid rgba(19, 24, 31, 0.06);
+            border-bottom: 1px solid rgba(19, 24, 31, 0.06);
+            background: rgba(255, 255, 255, 0.32);
+            backdrop-filter: blur(12px);
+        }
+
+        .ticker-track {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+            color: var(--muted);
+            font-size: 0.92rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .ticker-track span {
+            display: inline-flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .ticker-track span::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(201, 111, 79, 0.55);
+            box-shadow: 0 0 0 4px rgba(201, 111, 79, 0.08);
+        }
+
+        .ticker-track span:last-child::after {
+            display: none;
+        }
+
+        .section-intro {
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            gap: 40px;
+            align-items: start;
+            margin-bottom: 42px;
+        }
+
+        .section-intro h2 {
+            font-size: clamp(2.2rem, 4vw, 3.6rem);
+            line-height: 1.02;
+            max-width: 12ch;
+        }
+
+        .section-intro p {
+            font-size: 1.04rem;
+            max-width: 58ch;
+        }
+
+        .split-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 28px;
+        }
+
+        .panel {
+            position: relative;
+            padding: 34px;
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            background: rgba(255, 255, 255, 0.72);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .panel h3 {
+            margin-bottom: 18px;
+            font-size: 1.55rem;
+        }
+
+        .feature-list,
+        .step-card ul,
+        .edition-list {
+            display: grid;
+            gap: 12px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .feature-list li,
+        .step-card li,
+        .edition-list li {
+            display: grid;
+            grid-template-columns: 12px 1fr;
+            gap: 12px;
+            line-height: 1.65;
+        }
+
+        .feature-list li {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(19, 24, 31, 0.07);
+            color: var(--muted);
+        }
+
+        .feature-list li:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .feature-list span,
+        .step-card li::before,
+        .edition-list li::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            margin-top: 5px;
+            border-radius: 50%;
+        }
+
+        .feature-list span {
+            background: radial-gradient(circle at 30% 30%, #ffd4c2 0%, var(--accent) 72%);
+            box-shadow: 0 0 0 5px rgba(201, 111, 79, 0.1);
+        }
+
+        .solution-panel {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(245, 248, 251, 0.92) 100%);
+        }
+
+        .route-map {
+            position: relative;
+            min-height: 300px;
+            border-radius: 24px;
+            padding: 26px;
+            margin-bottom: 26px;
+            background:
+                linear-gradient(180deg, rgba(44, 109, 125, 0.08) 0%, rgba(44, 109, 125, 0.02) 100%),
+                rgba(255, 255, 255, 0.76);
+            border: 1px solid rgba(44, 109, 125, 0.12);
+            overflow: hidden;
+        }
+
+        .route-trace {
+            position: absolute;
+            width: 76%;
+            height: 3px;
+            left: 12%;
+            top: 50%;
+            background: linear-gradient(90deg, rgba(44, 109, 125, 0.18) 0%, rgba(44, 109, 125, 0.82) 45%, rgba(201, 111, 79, 0.88) 100%);
+            transform: rotate(-10deg);
+            box-shadow: 0 0 0 8px rgba(44, 109, 125, 0.04);
+        }
+
+        .route-node {
+            position: absolute;
+            display: grid;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        .route-node strong {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: "Sora", sans-serif;
+            font-size: 0.94rem;
+            letter-spacing: -0.03em;
+        }
+
+        .route-node strong::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--signal);
+            box-shadow: 0 0 0 6px rgba(44, 109, 125, 0.1);
+        }
+
+        .route-node p {
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .route-node.start {
+            left: 34px;
+            top: 40px;
+        }
+
+        .route-node.hazard {
+            right: 36px;
+            top: 82px;
+        }
+
+        .route-node.signal {
+            left: 50%;
+            bottom: 34px;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .route-node.signal strong {
+            justify-content: center;
+        }
+
+        .section-dark {
+            position: relative;
+            color: #f6f7fb;
+            background:
+                radial-gradient(circle at 18% 18%, rgba(201, 111, 79, 0.12), transparent 28%),
+                radial-gradient(circle at 82% 22%, rgba(44, 109, 125, 0.18), transparent 24%),
+                linear-gradient(180deg, #15202a 0%, #101923 100%);
+            overflow: hidden;
+        }
+
+        .section-dark::before,
+        .section-dark::after {
+            content: "";
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(90px);
+            pointer-events: none;
+        }
+
+        .section-dark::before {
+            width: 320px;
+            height: 320px;
+            right: -120px;
+            top: 60px;
+            background: rgba(201, 111, 79, 0.18);
+        }
+
+        .section-dark::after {
+            width: 360px;
+            height: 360px;
+            left: -120px;
+            bottom: -90px;
+            background: rgba(44, 109, 125, 0.14);
+        }
+
+        .section-dark .eyebrow {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.14);
+            color: #f9ccb9;
+        }
+
+        .section-dark .section-intro p,
+        .section-dark .step-card p,
+        .section-dark .impact-card p {
+            color: var(--muted-light);
+        }
+
+        .steps-grid,
+        .impact-cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .step-card,
+        .impact-card {
+            padding: 30px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+            backdrop-filter: blur(16px);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            margin-bottom: 22px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff7f2;
+            font-family: "Sora", sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .step-card h3,
+        .impact-card strong {
+            display: block;
+            margin-bottom: 14px;
+            color: #ffffff;
+            font-family: "Sora", sans-serif;
+            letter-spacing: -0.03em;
+        }
+
+        .step-card h3 {
+            font-size: 1.55rem;
+        }
+
+        .step-card li,
+        .impact-card p {
+            color: var(--muted-light);
+        }
+
+        .step-card li::before {
+            background: linear-gradient(180deg, #f4b49a 0%, #d26f4c 100%);
+            box-shadow: 0 0 0 5px rgba(244, 180, 154, 0.08);
+        }
+
+        .essence-section {
+            padding-top: 104px;
+            padding-bottom: 104px;
+        }
+
+        .essence-shell {
+            display: grid;
+            gap: 34px;
+        }
+
+        .essence-heading {
+            display: grid;
+            gap: 18px;
+            max-width: 52rem;
+        }
+
+        .essence-heading h2 {
+            font-size: clamp(3.1rem, 6vw, 5rem);
+            line-height: 0.92;
+            text-transform: uppercase;
+            letter-spacing: -0.07em;
+        }
+
+        .essence-heading p {
+            max-width: 46rem;
+            font-size: 1.04rem;
+        }
+
+        .essence-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .essence-card {
+            padding: 34px 28px 30px;
+            min-height: 288px;
+            border-radius: 28px;
+            border: 1px solid rgba(19, 24, 31, 0.09);
+            background: rgba(255, 255, 255, 0.72);
+            box-shadow: var(--shadow);
+        }
+
+        .essence-card.is-accent {
+            background: linear-gradient(180deg, rgba(255, 241, 236, 0.92), rgba(255, 255, 255, 0.84));
+        }
+
+        .essence-card.is-soft {
+            background: linear-gradient(180deg, rgba(244, 250, 252, 0.92), rgba(255, 255, 255, 0.82));
+        }
+
+        .essence-index {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .essence-index::before {
+            content: "";
+            width: 32px;
+            height: 1px;
+            background: rgba(19, 24, 31, 0.24);
+        }
+
+        .essence-card h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-size: clamp(1.7rem, 2.6vw, 2.5rem);
+            letter-spacing: -0.05em;
+        }
+
+        .essence-card p {
+            font-size: 1rem;
+            line-height: 1.82;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+            gap: 30px;
+            align-items: start;
+        }
+
+        .product-copy {
+            position: sticky;
+            top: 130px;
+            display: grid;
+            gap: 24px;
+        }
+
+        .product-copy h2 {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            line-height: 1.04;
+            max-width: 10ch;
+        }
+
+        .note-grid,
+        .edition-grid,
+        .impact-grid {
+            display: grid;
+            gap: 22px;
+        }
+
+        .product-editions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+            align-items: stretch;
+            margin-top: 28px;
+        }
+
+        .note-card {
+            padding: 18px 20px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            box-shadow: 0 20px 36px -34px rgba(18, 27, 36, 0.5);
+        }
+
+        .note-card strong {
+            display: block;
+            margin-bottom: 5px;
+            font-family: "Sora", sans-serif;
+            font-size: 0.96rem;
+            letter-spacing: -0.03em;
+        }
+
+        .edition-card {
+            --edition-rgb: 44, 109, 125;
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+            align-items: start;
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(252, 249, 245, 0.84));
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .edition-card[data-edition="sun"] {
+            --edition-rgb: 201, 111, 79;
+        }
+
+        .edition-card.featured {
+            border-color: rgba(201, 111, 79, 0.22);
+        }
+
+        .edition-card.featured::before {
+            content: "Escenario urbano";
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(201, 111, 79, 0.13);
+            color: var(--accent-dark);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .edition-visual {
+            position: relative;
+            min-height: 260px;
+            padding: 28px 26px 18px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        .edition-visual::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.44);
+            filter: blur(2px);
+        }
+
+        .edition-visual::after {
+            content: "";
+            position: absolute;
+            inset: 26px 24px 18px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow:
+                inset 0 0 0 1px rgba(19, 24, 31, 0.08),
+                0 26px 34px -30px rgba(18, 27, 36, 0.52);
+        }
+
+        .edition-visual.clear {
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), transparent 30%),
+                linear-gradient(160deg, rgba(255, 244, 236, 0.96), rgba(248, 242, 236, 0.8));
+        }
+
+        .edition-visual.sun {
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255, 200, 138, 0.34), transparent 22%),
+                linear-gradient(160deg, rgba(21, 32, 43, 0.92), rgba(36, 51, 62, 0.84));
+        }
+
+        .edition-visual img {
+            position: relative;
+            width: min(100%, 340px);
+            max-height: 196px;
+            object-fit: contain;
+            z-index: 1;
+            filter: drop-shadow(0 24px 34px rgba(12, 17, 24, 0.22));
+        }
+
+        .edition-content {
+            display: grid;
+            gap: 16px;
+            padding: 18px 26px 30px;
+            align-content: start;
+        }
+
+        .edition-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: fit-content;
+            padding: 9px 13px;
+            border-radius: 999px;
+            background: var(--signal-soft);
+            color: var(--signal);
+            font-size: 0.77rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin: 0 auto;
+        }
+
+        .edition-tag::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .edition-card.is-linked-active {
+            border-color: rgba(var(--edition-rgb), 0.34);
+            box-shadow:
+                0 34px 56px -34px rgba(18, 27, 36, 0.72),
+                0 0 0 1px rgba(var(--edition-rgb), 0.18);
+            transform: translateY(-10px);
+        }
+
+        .edition-card.is-linked-active::after {
+            transform: translateX(122%) rotate(9deg);
+        }
+
+        .edition-card.is-linked-active .edition-tag {
+            background: rgba(var(--edition-rgb), 0.12);
+            color: rgb(var(--edition-rgb));
+        }
+
+        .edition-card.is-linked-active .edition-highlight {
+            color: rgb(var(--edition-rgb));
+        }
+
+        .edition-card.is-linked-active .edition-visual::after {
+            box-shadow:
+                inset 0 0 0 1px rgba(var(--edition-rgb), 0.16),
+                0 26px 34px -30px rgba(18, 27, 36, 0.52);
+        }
+
+        .edition-content h3 {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .edition-content>p {
+            max-width: 32ch;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .edition-highlight {
+            margin-top: 2px;
+            font-family: "Sora", sans-serif;
+            font-size: 0.98rem;
+            font-weight: 700;
+            line-height: 1.45;
+            text-align: center;
+            color: var(--text);
+            letter-spacing: -0.03em;
+        }
+
+        .edition-list {
+            gap: 14px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(19, 24, 31, 0.08);
+        }
+
+        .edition-list li {
+            position: relative;
+            display: block;
+            padding-left: 24px;
+            color: var(--muted);
+            line-height: 1.72;
+        }
+
+        .edition-list strong {
+            color: var(--text);
+            font-family: "Sora", sans-serif;
+            font-size: 0.92rem;
+            letter-spacing: -0.02em;
+        }
+
+        .edition-list li::before {
+            position: absolute;
+            top: 0.58em;
+            left: 0;
+            margin-top: 0;
+            background: linear-gradient(180deg, rgba(44, 109, 125, 1) 0%, rgba(31, 77, 88, 1) 100%);
+            box-shadow: 0 0 0 5px rgba(44, 109, 125, 0.08);
+        }
+
+        .hero-metric,
+        .visual-card,
+        .note-card,
+        .essence-card,
+        .edition-card,
+        .step-card,
+        .impact-card,
+        .demo-panel,
+        .demo-insight {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.38s ease, box-shadow 0.38s ease, border-color 0.38s ease;
+        }
+
+        .hero-metric::after,
+        .visual-card::after,
+        .note-card::after,
+        .essence-card::after,
+        .edition-card::after,
+        .step-card::after,
+        .impact-card::after,
+        .demo-panel::after,
+        .demo-insight::after {
+            content: "";
+            position: absolute;
+            inset: -30%;
+            background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.38) 50%, transparent 62%);
+            transform: translateX(-140%) rotate(9deg);
+            pointer-events: none;
+            transition: transform 0.9s ease;
+        }
+
+        .step-card::after,
+        .impact-card::after,
+        .demo-panel::after,
+        .demo-insight::after {
+            background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.12) 50%, transparent 60%);
+        }
+
+        .hero-metric:hover,
+        .visual-card:hover,
+        .note-card:hover,
+        .essence-card:hover,
+        .edition-card:hover,
+        .step-card:hover,
+        .impact-card:hover,
+        .demo-panel:hover,
+        .demo-insight:hover {
+            transform: translateY(-8px);
+        }
+
+        .hero-metric:hover::after,
+        .visual-card:hover::after,
+        .note-card:hover::after,
+        .essence-card:hover::after,
+        .edition-card:hover::after,
+        .step-card:hover::after,
+        .impact-card:hover::after,
+        .demo-panel:hover::after,
+        .demo-insight:hover::after {
+            transform: translateX(140%) rotate(9deg);
+        }
+
+        .hero-signal-grid .info-chip {
+            animation: none;
+        }
+
+        .edition-card:hover .edition-visual img {
+            transform: translateY(-10px) scale(1.04);
+            filter: drop-shadow(0 30px 44px rgba(12, 17, 24, 0.28));
+        }
+
+        .edition-visual img {
+            transition: transform 0.45s ease, filter 0.45s ease;
+        }
+
+        .demo-panel {
+            padding: 28px;
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(25, 42, 56, 0.08);
+            background:
+                radial-gradient(circle at top right, rgba(201, 111, 79, 0.12), transparent 30%),
+                linear-gradient(160deg, rgba(15, 24, 34, 0.98), rgba(22, 35, 47, 0.96));
+            box-shadow: 0 32px 70px -36px rgba(10, 17, 24, 0.9);
+            color: #f2f6fb;
+        }
+
+        .demo-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+
+        .demo-heading {
+            display: grid;
+            gap: 10px;
+            max-width: 28rem;
+        }
+
+        .demo-heading h3 {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            line-height: 1.04;
+            color: #f7fbff;
+        }
+
+        .demo-heading p {
+            color: rgba(217, 227, 238, 0.78);
+        }
+
+        .demo-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+            align-self: start;
+        }
+
+        .demo-control {
+            appearance: none;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(232, 239, 246, 0.82);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font: inherit;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.24s ease, background-color 0.24s ease, color 0.24s ease, border-color 0.24s ease;
+        }
+
+        .demo-control:hover,
+        .demo-control:focus-visible {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.24);
+            color: #ffffff;
+        }
+
+        .demo-control.is-active {
+            background: rgba(111, 227, 255, 0.18);
+            border-color: rgba(111, 227, 255, 0.42);
+            color: #dffaff;
+            box-shadow: 0 16px 30px -22px rgba(111, 227, 255, 0.82);
+        }
+
+        .demo-stage-shell {
+            display: grid;
+            gap: 14px;
+        }
+
+        .demo-stage {
+            position: relative;
+            min-height: 390px;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background:
+                radial-gradient(circle at 50% 38%, rgba(var(--demo-glow-rgb, 111, 227, 255), 0.12), transparent 34%),
+                linear-gradient(180deg, rgba(12, 20, 28, 0.98) 0%, rgba(17, 29, 40, 0.98) 100%);
+        }
+
+        .demo-stage::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(var(--demo-glow-rgb, 111, 227, 255), 0.12), transparent 22%);
+            pointer-events: none;
+        }
+
+        .demo-grid-lines,
+        .demo-scanline,
+        .demo-pulse {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .demo-grid-lines {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), transparent 100%);
+        }
+
+        .demo-scanline {
+            inset: 8% 0 auto;
+            height: 96px;
+            background: linear-gradient(180deg, rgba(var(--demo-glow-rgb, 111, 227, 255), 0) 0%, rgba(var(--demo-glow-rgb, 111, 227, 255), 0.1) 50%, rgba(var(--demo-glow-rgb, 111, 227, 255), 0) 100%);
+            filter: blur(4px);
+            animation: scanSweep 8s linear infinite;
+            opacity: 0.42;
+        }
+
+        .demo-pulse {
+            inset: auto;
+            border-radius: 50%;
+            border: 1px solid rgba(var(--demo-glow-rgb, 111, 227, 255), 0.1);
+            box-shadow: 0 0 0 12px rgba(var(--demo-glow-rgb, 111, 227, 255), 0.025);
+            animation: radarPulse 5.8s ease-out infinite;
+            opacity: 0.44;
+        }
+
+        .pulse-a {
+            width: 150px;
+            height: 150px;
+            top: 20%;
+            left: 18%;
+        }
+
+        .pulse-b {
+            width: 220px;
+            height: 220px;
+            right: 12%;
+            bottom: 12%;
+            animation-delay: -2.2s;
+        }
+
+        #eyenavCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-height: 420px;
+            touch-action: none;
+            cursor: grab;
+        }
+
+        #eyenavCanvas:active {
+            cursor: grabbing;
+        }
+
+        .demo-status {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            padding: 16px 18px;
+            border-radius: 22px;
+            background: rgba(10, 19, 29, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            color: #f4fbff;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--demo-glow, #6fe3ff);
+            box-shadow: 0 0 0 8px rgba(111, 227, 255, 0.12);
+            animation: signalBlink 1.8s ease-in-out infinite;
+        }
+
+        .status-reading {
+            text-align: right;
+        }
+
+        .status-reading span {
+            display: block;
+            font-family: "Sora", sans-serif;
+            font-size: 1.6rem;
+            line-height: 1;
+            color: #ffffff;
+        }
+
+        .status-reading small {
+            color: rgba(217, 227, 238, 0.74);
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .demo-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .demo-summary-card {
+            padding: 18px 18px 16px;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .demo-summary-card small {
+            display: inline-flex;
+            margin-bottom: 8px;
+            color: rgba(186, 224, 235, 0.78);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .demo-summary-card strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #f7fbff;
+            font-family: "Sora", sans-serif;
+            font-size: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .demo-summary-card p {
+            color: rgba(217, 227, 238, 0.76);
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .demo-footer {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .demo-insight {
+            padding: 18px 20px;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .demo-insight strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #f7fbff;
+            font-family: "Sora", sans-serif;
+            font-size: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .demo-insight p {
+            color: rgba(217, 227, 238, 0.76);
+            font-size: 0.95rem;
+        }
+
+        .cta-panel {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) auto;
+            gap: 32px;
+            align-items: center;
+            padding: 36px;
+            border-radius: 32px;
+            border: 1px solid rgba(19, 24, 31, 0.08);
+            background:
+                radial-gradient(circle at top right, rgba(201, 111, 79, 0.16), transparent 24%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.72));
+            box-shadow: var(--shadow);
+        }
+
+        .cta-panel h2 {
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            line-height: 1.08;
+            margin-bottom: 14px;
+            max-width: 15ch;
+        }
+
+        .cta-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: flex-end;
+        }
+
+        .footer {
+            padding: 26px 0 44px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .footer-shell {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(19, 24, 31, 0.08);
+        }
+
+        .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .js .reveal {
+            opacity: 0;
+            transform: translateY(26px);
+            transition: opacity 0.75s ease, transform 0.75s ease;
+        }
+
+        .js .reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: rotate(-7deg) translateY(0px);
+            }
+
+            50% {
+                transform: rotate(-5deg) translateY(-10px);
+            }
+        }
+
+        @keyframes chipFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes scanSweep {
+            0% {
+                transform: translateY(-180px);
+                opacity: 0;
+            }
+
+            15%,
+            85% {
+                opacity: 0.72;
+            }
+
+            100% {
+                transform: translateY(420px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes radarPulse {
+            0% {
+                transform: scale(0.78);
+                opacity: 0;
+            }
+
+            18% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.18);
+                opacity: 0;
+            }
+        }
+
+        @keyframes signalBlink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.42;
+            }
+        }
+
+        @media (max-width: 1120px) {
+
+            .hero-grid,
+            .product-grid,
+            .section-intro,
+            .split-grid,
+            .cta-panel,
+            .steps-grid,
+            .impact-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .product-copy {
+                position: static;
+            }
+
+            .hero-copy h1,
+            .section-intro h2,
+            .product-copy h2,
+            .cta-panel h2 {
+                max-width: none;
+            }
+
+            .cta-actions {
+                justify-content: flex-start;
+            }
+
+            .demo-head,
+            .demo-footer,
+            .demo-summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .essence-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 920px) {
+            .site-header {
+                top: 12px;
+            }
+
+            .header-shell {
+                border-radius: 28px;
+                padding: 16px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .hero {
+                padding-top: 50px;
+            }
+
+            .hero-meta,
+            .visual-stack {
+                grid-template-columns: 1fr;
+            }
+
+            .device-stage {
+                gap: 16px;
+                min-height: auto;
+            }
+
+            .hero-viewer {
+                width: 100%;
+            }
+
+            .hero-viewer-caption {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .hero-viewer-status {
+                text-align: left;
+            }
+
+            .hero-signal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .route-node {
+                position: static;
+            }
+
+            .route-trace {
+                width: 3px;
+                height: 66%;
+                left: 50%;
+                top: 16%;
+                transform: translateX(-50%);
+            }
+
+            .route-node {
+                min-width: 0;
+                text-align: left;
+            }
+
+            .route-node.signal {
+                transform: none;
+                text-align: left;
+            }
+
+            .route-node.signal strong {
+                justify-content: flex-start;
+            }
+
+            .route-map {
+                display: grid;
+                gap: 22px;
+                min-height: auto;
+                padding: 28px 20px;
+            }
+
+            .edition-card {
+                grid-template-columns: 1fr;
+            }
+
+            .essence-grid,
+            .product-editions {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-head,
+            .demo-status,
+            .demo-footer,
+            .demo-summary-grid {
+                display: grid;
+                gap: 16px;
+            }
+
+            .demo-controls {
+                justify-content: flex-start;
+            }
+
+            .demo-status {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+
+            .section,
+            .section-tight {
+                padding-top: 86px;
+                padding-bottom: 86px;
+            }
+
+            .container {
+                width: min(100vw - 24px, 1160px);
+            }
+
+            .brand {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .hero-copy h1 {
+                font-size: clamp(2.6rem, 13vw, 4rem);
+            }
+
+            .device-stage {
+                padding: 22px;
+                min-height: auto;
+            }
+
+            .hero-mode-switch {
+                top: 14px;
+                left: 14px;
+                right: 14px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .hero-mode-button {
+                width: calc(50% - 4px);
+                min-width: 132px;
+            }
+
+            .hero-viewer {
+                min-height: 332px;
+            }
+
+            .hero-device-fallback,
+            #heroEyeNavCanvas {
+                height: 332px;
+            }
+
+            .hero-viewer-caption {
+                gap: 12px;
+                padding: 14px;
+            }
+
+            .panel,
+            .essence-card,
+            .step-card,
+            .impact-card,
+            .cta-panel,
+            .edition-content,
+            .edition-visual,
+            .demo-panel,
+            .demo-insight {
+                padding-left: 22px;
+                padding-right: 22px;
+            }
+
+            .demo-stage,
+            #eyenavCanvas {
+                min-height: 320px;
+            }
+
+            .essence-heading h2 {
+                font-size: clamp(2.8rem, 14vw, 3.7rem);
+            }
+
+            .status-reading {
+                text-align: left;
+            }
+
+            .footer-shell {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition-duration: 0.01ms !important;
+                transition-delay: 0ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header" id="site-header">
+        <div class="container header-shell">
+            <a class="brand" href="#inicio" aria-label="Ir al inicio de EyeNav">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M2.5 12C3.4 14.1 5.9 15.5 12 15.5S20.6 14.1 21.5 12" stroke="#17202A" stroke-width="2"
+                            stroke-linecap="round" />
+                        <path d="M2 12A10 10 0 1 0 22 12" stroke="#17202A" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="12" r="3" fill="#C96F4F" />
+                    </svg>
+                </span>
+                <span>EyeNav</span>
+            </a>
+
+            <nav class="nav" aria-label="Secciones principales">
+                <a href="#concepto">Concepto</a>
+                <a href="#tecnologia">Tecnología</a>
+                <a href="#producto">Prototipo</a>
+                <a href="#impacto">Impacto</a>
+            </nav>
+
+            <a class="button button-secondary" href="#pitch">Ver narrativa</a>
+        </div>
+    </header>
+
+    <main id="inicio">
+        <section class="hero section">
+            <div class="container hero-grid">
+                <div class="hero-copy reveal is-visible">
+                    <span class="eyebrow">Prototipo visual para emprendimiento universitario</span>
+                    <h1>La ciudad se vuelve más clara cuando también se puede sentir.</h1>
+                    <p>
+                        EyeNav es un concepto de lentes inteligentes con IA que ayuda a personas con discapacidad visual
+                        a navegar entornos urbanos de forma autónoma mediante sensores inteligentes y alertas táctiles.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="#concepto">Explorar propuesta</a>
+                        <a class="button button-secondary" href="#producto">Ver producto</a>
+                    </div>
+                    <div class="hero-meta">
+                        <div class="hero-metric">
+                            <strong>Problema real</strong>
+                            <span>Movilidad urbana con obstáculos impredecibles y decisiones rápidas.</span>
+                        </div>
+                        <div class="hero-metric">
+                            <strong>Solución usable</strong>
+                            <span>Lectura del entorno con IA y retroalimentación táctil discreta.</span>
+                        </div>
+                        <div class="hero-metric">
+                            <strong>Pitch potente</strong>
+                            <span>Accesibilidad, diseño de producto e innovación aplicada en una sola historia.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-visual reveal">
+                    <div class="device-stage">
+                        <div class="urban-grid" aria-hidden="true"></div>
+                        <div class="stage-orbit orbit-a" aria-hidden="true"></div>
+                        <div class="stage-orbit orbit-b" aria-hidden="true"></div>
+                        <div class="hero-viewer" id="hero-viewer">
+                            <div class="hero-mode-switch" aria-label="Cambiar versión tridimensional de EyeNav">
+                                <button class="hero-mode-button is-active" type="button" data-hero-lens="clear"
+                                    aria-pressed="true">EyeNav Clear</button>
+                                <button class="hero-mode-button" type="button" data-hero-lens="sun"
+                                    aria-pressed="false">EyeNav Sun</button>
+                            </div>
+                            <img class="hero-device-fallback" src="image/WhatsApp-Image-2026-03-28-at-2-29-03-AM.webp"
+                                alt="Vitrina tridimensional de EyeNav Clear">
+                            <canvas id="heroEyeNavCanvas"
+                                aria-label="Visor tridimensional interactivo de EyeNav"></canvas>
+                        </div>
+                        <div class="hero-viewer-caption">
+                            <div class="hero-viewer-copy">
+                                <small id="hero-version-kicker">Versión activa</small>
+                                <strong id="hero-version-title">EyeNav Clear</strong>
+                                <span id="hero-version-copy">Cristales de alta claridad para interiores, aulas y
+                                    recorridos cotidianos.</span>
+                            </div>
+                            <div class="hero-viewer-status">
+                                <small>Interacción 3D</small>
+                                <span id="hero-version-status">Arrastra para orbitar</span>
+                            </div>
+                        </div>
+                        <div class="hero-signal-grid" aria-label="Capacidades principales de EyeNav">
+                            <div class="info-chip chip-top is-active" id="hero-chip-top">IA contextual</div>
+                            <div class="info-chip chip-left is-active" id="hero-chip-left">Sensores urbanos</div>
+                            <div class="info-chip chip-bottom is-active" id="hero-chip-bottom">Alertas hápticas</div>
+                        </div>
+                    </div>
+
+                    <div class="visual-stack">
+                        <article class="visual-card">
+                            <strong>Lectura del entorno</strong>
+                            <p>Detecta riesgos cotidianos como mobiliario urbano, desniveles o trayectorias cerradas.</p>
+                        </article>
+                        <article class="visual-card accent">
+                            <strong>Interacción silenciosa</strong>
+                            <p>La guía se comunica con vibraciones precisas para no saturar al usuario con audio
+                                constante.</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ticker" aria-label="Principios del proyecto">
+            <div class="container ticker-track">
+                <span>Autonomía urbana</span>
+                <span>Accesibilidad con IA</span>
+                <span>Diseño discreto</span>
+                <span>Innovación con propósito</span>
+            </div>
+        </section>
+
+        <section class="section section-tight essence-section" id="esencia">
+            <div class="container essence-shell">
+                <div class="essence-heading reveal">
+                    <span class="eyebrow">Fundamentos del proyecto</span>
+                    <h2>Nuestra esencia</h2>
+                    <p>
+                        EyeNav no nace solo como tecnología. Nace desde la inclusión, la seguridad y la idea de que la
+                        autonomía urbana también puede diseñarse con sensibilidad, claridad y propósito real.
+                    </p>
+                </div>
+
+                <div class="essence-grid">
+                    <article class="essence-card is-accent reveal">
+                        <span class="essence-index">01</span>
+                        <h3>Misión</h3>
+                        <p>
+                            Empoderar a las personas con discapacidad visual mediante tecnología de asistencia innovadora
+                            y accesible, permitiéndoles navegar su entorno con seguridad y total autonomía.
+                        </p>
+                    </article>
+
+                    <article class="essence-card reveal">
+                        <span class="essence-index">02</span>
+                        <h3>Visión</h3>
+                        <p>
+                            Ser una propuesta líder en soluciones de movilidad inteligente, logrando que la tecnología de
+                            asistencia se convierta en un estándar de inclusión social y autonomía personal.
+                        </p>
+                    </article>
+
+                    <article class="essence-card is-soft reveal">
+                        <span class="essence-index">03</span>
+                        <h3>Valores</h3>
+                        <p>
+                            EyeNav se guía por la inclusión y la innovación con propósito. Actuamos con empatía ante
+                            necesidades reales, priorizando siempre la seguridad y la confianza de nuestros usuarios.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-tight" id="concepto">
+            <div class="container section-intro reveal">
+                <div>
+                    <span class="eyebrow">Problema y oportunidad</span>
+                </div>
+                <div>
+                    <h2>La movilidad en ciudad sigue dependiendo demasiado de señales visuales.</h2>
+                    <p>
+                        EyeNav propone una capa adicional de percepción. No reemplaza apoyos existentes: amplía la
+                        capacidad de anticiparse al entorno urbano y traduce esa información en una experiencia más
+                        segura, silenciosa y cotidiana.
+                    </p>
+                </div>
+            </div>
+
+            <div class="container split-grid">
+                <article class="panel reveal">
+                    <h3>Qué estamos resolviendo</h3>
+                    <ul class="feature-list">
+                        <li><span aria-hidden="true"></span>Obstáculos inesperados como postes, bordillos, señalética o
+                            mobiliario urbano que aparecen fuera del alcance inmediato.</li>
+                        <li><span aria-hidden="true"></span>Cambios de dirección, cruces y trayectorias complejas que
+                            exigen interpretar demasiadas referencias visuales en pocos segundos.</li>
+                        <li><span aria-hidden="true"></span>Dependencia de instrucciones auditivas continuas, que pueden
+                            resultar invasivas en calles ruidosas o escenarios de alta atención.</li>
+                    </ul>
+                </article>
+
+                <article class="panel solution-panel reveal">
+                    <div class="route-map" aria-hidden="true">
+                        <div class="route-trace"></div>
+                        <div class="route-node start">
+                            <strong>Detecta</strong>
+                            <p>Lectura del espacio inmediato y sus cambios.</p>
+                        </div>
+                        <div class="route-node hazard">
+                            <strong>Interpreta</strong>
+                            <p>La IA prioriza obstáculos y momentos críticos.</p>
+                        </div>
+                        <div class="route-node signal">
+                            <strong>Guía</strong>
+                            <p>Vibraciones discretas para corregir el recorrido.</p>
+                        </div>
+                    </div>
+                    <h3>Cómo responde EyeNav</h3>
+                    <p>
+                        El sistema combina sensores inteligentes, interpretación contextual y alertas táctiles para que
+                        la navegación se sienta intuitiva. La tecnología acompaña la decisión humana sin imponerse.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section section-dark" id="tecnologia">
+            <div class="container section-intro reveal">
+                <div>
+                    <span class="eyebrow">Arquitectura de experiencia</span>
+                </div>
+                <div>
+                    <h2>Una secuencia simple: detectar, interpretar y orientar.</h2>
+                    <p>
+                        Para un pitch universitario, la fortaleza de EyeNav está en mostrar una lógica clara de producto.
+                        Cada capa explica por qué la solución es tecnológicamente interesante y humanamente útil.
+                    </p>
+                </div>
+            </div>
+
+            <div class="container steps-grid">
+                <article class="step-card reveal">
+                    <div class="step-number">01</div>
+                    <h3>Detección</h3>
+                    <p>Sensores integrados en la montura leen distancia, presencia y cambios de trayectoria cercanos.</p>
+                    <ul>
+                        <li>Obstáculos frontales y laterales en circulación peatonal.</li>
+                        <li>Variaciones del entorno urbano que exigen reacción inmediata.</li>
+                    </ul>
+                </article>
+
+                <article class="step-card reveal">
+                    <div class="step-number">02</div>
+                    <h3>Interpretación</h3>
+                    <p>La IA prioriza lo relevante para evitar ruido y convertir datos en señales accionables.</p>
+                    <ul>
+                        <li>Clasificación contextual de riesgo según proximidad o dirección.</li>
+                        <li>Lectura pensada para ciudad, cruces y recorridos cotidianos.</li>
+                    </ul>
+                </article>
+
+                <article class="step-card reveal">
+                    <div class="step-number">03</div>
+                    <h3>Orientación táctil</h3>
+                    <p>El usuario recibe pulsos claros y discretos que indican cuando corregir o confirmar el camino.</p>
+                    <ul>
+                        <li>Interacción silenciosa, útil en espacios ruidosos o concurridos.</li>
+                        <li>Menor dependencia de audio permanente durante el desplazamiento.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+        <section class="section" id="producto">
+            <div class="container">
+                <div class="product-grid">
+                    <div class="product-copy reveal">
+                        <span class="eyebrow">Prototipo de producto</span>
+                        <h2>Una montura tecnológica que conserva lenguaje cotidiano.</h2>
+                        <p>
+                            El valor visual del proyecto está en mostrar una solución posible, elegante y no estigmatizante.
+                            EyeNav se presenta como un objeto usable en la vida diaria, no como un dispositivo invasivo.
+                        </p>
+                        <div class="note-grid">
+                            <div class="note-card">
+                                <strong>Diseño discreto</strong>
+                                <p>La tecnología se integra en la montura para que la experiencia se sienta natural.</p>
+                            </div>
+                            <div class="note-card">
+                                <strong>Dos escenarios de uso</strong>
+                                <p>Interiores y exteriores como lectura simple para explicar adaptabilidad del sistema.</p>
+                            </div>
+                            <div class="note-card">
+                                <strong>Narrativa clara de MVP</strong>
+                                <p>Ideal para presentar validación temprana, pruebas piloto y evolución futura.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="edition-grid">
+                        <article class="demo-panel reveal" id="demo-lab" style="--demo-glow: #6fe3ff;">
+                            <div class="demo-head">
+                                <div class="demo-heading">
+                                    <span class="edition-tag">Demo IA en acción</span>
+                                    <h3>Así se vería EyeNav interpretando la calle en tiempo real.</h3>
+                                    <p>Selecciona un escenario y arrastra la demo para orbitar las gafas mientras la IA
+                                        prioriza riesgos y decide el patrón háptico.</p>
+                                </div>
+
+                                <div class="demo-controls" aria-label="Escenarios de simulación de EyeNav">
+                                    <button class="demo-control is-active" type="button" data-scene="crosswalk"
+                                        aria-pressed="true">Cruce</button>
+                                    <button class="demo-control" type="button" data-scene="obstacle"
+                                        aria-pressed="false">Obstáculo</button>
+                                    <button class="demo-control" type="button" data-scene="turn"
+                                        aria-pressed="false">Giro</button>
+                                </div>
+                            </div>
+
+                            <div class="demo-stage-shell">
+                                <div class="demo-status">
+                                    <div class="status-pill">
+                                        <span class="status-dot" aria-hidden="true"></span>
+                                        <span id="demo-status-label">Cruce alineado</span>
+                                    </div>
+
+                                    <div class="status-reading">
+                                        <span id="demo-distance">2.8 m</span>
+                                        <small>ventana de reacción</small>
+                                    </div>
+                                </div>
+
+                                <div class="demo-stage" id="demo-stage">
+                                    <div class="demo-grid-lines" aria-hidden="true"></div>
+                                    <div class="demo-scanline" aria-hidden="true"></div>
+                                    <div class="demo-pulse pulse-a" aria-hidden="true"></div>
+                                    <div class="demo-pulse pulse-b" aria-hidden="true"></div>
+                                    <canvas id="eyenavCanvas" aria-label="Simulación tridimensional de EyeNav"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="demo-summary-grid">
+                                <article class="demo-summary-card">
+                                    <small>Escenario detectado</small>
+                                    <strong id="demo-chip-primary-title">Cruce peatonal</strong>
+                                    <p id="demo-chip-primary-copy">Trayectoria centrada y libre</p>
+                                </article>
+                                <article class="demo-summary-card">
+                                    <small>Patrón háptico</small>
+                                    <strong id="demo-chip-secondary-title">Patrón háptico</strong>
+                                    <p id="demo-chip-secondary-copy">Pulsos simétricos suaves</p>
+                                </article>
+                                <article class="demo-summary-card">
+                                    <small>Lectura de IA</small>
+                                    <strong id="demo-chip-tertiary-title">Lectura IA</strong>
+                                    <p id="demo-chip-tertiary-copy">Confirma avance seguro y sostiene el eje</p>
+                                </article>
+                            </div>
+
+                            <div class="demo-footer">
+                                <div class="demo-insight">
+                                    <strong id="demo-vibration-title">Patrón háptico</strong>
+                                    <p id="demo-vibration-copy">Pulsos cortos y equilibrados para mantener a la persona
+                                        usuaria dentro del eje del cruce.</p>
+                                </div>
+
+                                <div class="demo-insight">
+                                    <strong id="demo-ai-title">Decisión de IA</strong>
+                                    <p id="demo-ai-copy">La montura detecta la zona más segura, reduce ruido y confirma un
+                                        avance estable sin sobrecargar con audio.</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="product-editions">
+                    <article class="edition-card reveal" data-edition="clear">
+                        <div class="edition-visual clear">
+                            <img src="image/WhatsApp-Image-2026-03-28-at-2-29-03-AM.webp"
+                                alt="Versión EyeNav Clear con cristales transparentes">
+                        </div>
+                        <div class="edition-content">
+                            <span class="edition-tag">Edición interiores</span>
+                            <h3>EyeNav Clear</h3>
+                            <p>
+                                La solución ideal para aulas, oficinas, estaciones y espacios interiores donde la
+                                claridad visual del lente favorece una presencia cotidiana y confiable.
+                            </p>
+                            <div class="edition-highlight">Optimizado para interiores y claridad total</div>
+                            <ul class="edition-list">
+                                <li><strong>Tecnología LiDAR:</strong> Sensores de largo alcance para detectar
+                                    obstáculos, bordillos y trayectorias en tiempo real.</li>
+                                <li><strong>Cristales de alta claridad:</strong> Visión nítida y cómoda para espacios
+                                    cerrados, hogares, campus y oficinas.</li>
+                                <li><strong>Batería de larga duración:</strong> Hasta 12 horas de uso continuo con una
+                                    carga ligera pensada para recorridos completos.</li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="edition-card featured reveal" data-edition="sun">
+                        <div class="edition-visual sun">
+                            <img src="image/WhatsApp-Image-2026-03-28-at-2-28-05-AM.webp"
+                                alt="Versión EyeNav Sun para navegación en exteriores">
+                        </div>
+                        <div class="edition-content">
+                            <span class="edition-tag">Edición exteriores</span>
+                            <h3>EyeNav Sun</h3>
+                            <p>
+                                La solución ideal para entornos urbanos y espacios abiertos bajo el sol, con una
+                                lectura del entorno más segura y cómoda durante trayectos de alta exposición.
+                            </p>
+                            <div class="edition-highlight">Protección solar con navegación inteligente</div>
+                            <ul class="edition-list">
+                                <li><strong>Tecnología LiDAR:</strong> Sensores de largo alcance para detectar
+                                    obstáculos, bordillos y vehículos a mayor distancia.</li>
+                                <li><strong>Cristales polarizados:</strong> Protección UV400 contra reflejos intensos,
+                                    ideal para exteriores y desplazamientos diurnos.</li>
+                                <li><strong>Batería de larga duración:</strong> Hasta 12 horas de uso continuo para
+                                    sostener recorridos largos con asistencia constante.</li>
+                            </ul>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-dark" id="impacto">
+            <div class="container impact-grid">
+                <div class="section-intro reveal">
+                    <div>
+                        <span class="eyebrow">Valor de emprendimiento</span>
+                    </div>
+                    <div>
+                        <h2>Una idea con impacto social y relato empresarial claro.</h2>
+                        <p>
+                            EyeNav funciona muy bien en presentación porque une una necesidad humana concreta con una
+                            solución tecnológica contemporánea. Eso le da fuerza tanto en la dimensión social como en la
+                            de innovación aplicada.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="impact-cards">
+                    <article class="impact-card reveal">
+                        <strong>Impacto social</strong>
+                        <p>Propone mayor autonomía y seguridad para personas con discapacidad visual en entornos urbanos
+                            donde la independencia cotidiana sigue siendo un desafío.</p>
+                    </article>
+
+                    <article class="impact-card reveal">
+                        <strong>Viabilidad académica</strong>
+                        <p>Permite articular diseño industrial, IA, experiencia de usuario, accesibilidad y validación de
+                            MVP dentro de un mismo proyecto universitario.</p>
+                    </article>
+
+                    <article class="impact-card reveal">
+                        <strong>Potencial de crecimiento</strong>
+                        <p>Abre conversaciones sobre pilotos, alianzas institucionales, inclusión urbana y nuevas capas de
+                            asistencia inteligente a futuro.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-tight" id="pitch">
+            <div class="container cta-panel reveal">
+                <div>
+                    <span class="eyebrow">Mensaje final</span>
+                    <h2>EyeNav convierte tecnología compleja en una promesa simple: moverse con más confianza.</h2>
+                    <p>
+                        La landing queda enfocada como prototipo visual de pitch. Presenta problema, solución, producto e
+                        impacto en un lenguaje más emocional, claro y universitario que la versión original.
+                    </p>
+                </div>
+                <div class="cta-actions">
+                    <a class="button button-primary" href="#inicio">Volver arriba</a>
+                    <a class="button button-secondary" href="#producto">Revisar prototipo</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-shell">
+            <span>EyeNav - Landing conceptual para presentación de emprendimiento universitario</span>
+            <span>2026 - Accesibilidad, IA y movilidad urbana</span>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const header = document.getElementById('site-header');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const onScroll = () => {
+            header.classList.toggle('is-scrolled', window.scrollY > 18);
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        const elements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.16,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        elements.forEach((element) => observer.observe(element));
+
+        if (!prefersReducedMotion) {
+            const tiltItems = document.querySelectorAll('.hero-metric, .visual-card, .note-card, .essence-card, .edition-card, .step-card, .impact-card');
+
+            tiltItems.forEach((item) => {
+                item.addEventListener('pointermove', (event) => {
+                    const rect = item.getBoundingClientRect();
+                    const px = (event.clientX - rect.left) / rect.width - 0.5;
+                    const py = (event.clientY - rect.top) / rect.height - 0.5;
+                    const rotateY = px * 8;
+                    const rotateX = py * -8;
+                    item.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+                });
+
+                item.addEventListener('pointerleave', () => {
+                    item.style.transform = '';
+                });
+            });
+        }
+
+        const heroStage = document.querySelector('.device-stage');
+        const heroViewer = document.getElementById('hero-viewer');
+        const heroFallbackImage = document.querySelector('.hero-device-fallback');
+        const heroLensButtons = Array.from(document.querySelectorAll('.hero-mode-button'));
+        const heroEditionCards = Array.from(document.querySelectorAll('.edition-card[data-edition]'));
+        const heroLensHud = {
+            kicker: document.getElementById('hero-version-kicker'),
+            title: document.getElementById('hero-version-title'),
+            copy: document.getElementById('hero-version-copy'),
+            status: document.getElementById('hero-version-status')
+        };
+
+        const heroLensModes = {
+            clear: {
+                kicker: 'Versión activa',
+                title: 'EyeNav Clear',
+                copy: 'Cristales de alta claridad para interiores, aulas y recorridos cotidianos.',
+                status: 'Órbita libre con lectura limpia',
+                image: 'image/WhatsApp-Image-2026-03-28-at-2-29-03-AM.webp',
+                alt: 'Vitrina tridimensional de EyeNav Clear',
+                lensMode: 'clear',
+                tone: '111, 227, 255',
+                chipColor: '44, 109, 125',
+                chipSoft: '240, 248, 250',
+                linkedEdition: 'clear',
+                sensor: 0x6fe3ff,
+                baseYaw: -0.9,
+                basePitch: 0.06,
+                baseRoll: -0.1
+            },
+            sun: {
+                kicker: 'Versión activa',
+                title: 'EyeNav Sun',
+                copy: 'Lentes polarizados para exteriores y trayectos urbanos con alta exposición solar.',
+                status: 'Acabado más oscuro y protección solar',
+                image: 'image/WhatsApp-Image-2026-03-28-at-2-28-05-AM.webp',
+                alt: 'Vitrina tridimensional de EyeNav Sun',
+                lensMode: 'sun',
+                tone: '255, 164, 120',
+                chipColor: '201, 111, 79',
+                chipSoft: '255, 241, 231',
+                linkedEdition: 'sun',
+                sensor: 0xffa478,
+                baseYaw: -0.7,
+                basePitch: 0.04,
+                baseRoll: -0.08
+            }
+        };
+
+        let currentHeroLens = 'clear';
+        let applyHeroLensMode = null;
+
+        const setHeroLensMode = (modeName) => {
+            const config = heroLensModes[modeName] || heroLensModes.clear;
+            currentHeroLens = modeName in heroLensModes ? modeName : 'clear';
+
+            heroLensButtons.forEach((button) => {
+                const isActive = button.dataset.heroLens === currentHeroLens;
+                button.classList.toggle('is-active', isActive);
+                button.setAttribute('aria-pressed', String(isActive));
+            });
+
+            if (heroViewer) {
+                heroViewer.style.setProperty('--hero-tone', config.tone);
+            }
+
+            if (heroStage) {
+                heroStage.style.setProperty('--hero-chip-rgb', config.chipColor);
+                heroStage.style.setProperty('--hero-chip-soft', config.chipSoft);
+            }
+
+            if (heroFallbackImage) {
+                heroFallbackImage.src = config.image;
+                heroFallbackImage.alt = config.alt;
+            }
+
+            heroLensHud.kicker.textContent = config.kicker;
+            heroLensHud.title.textContent = config.title;
+            heroLensHud.copy.textContent = config.copy;
+            heroLensHud.status.textContent = config.status;
+
+            heroEditionCards.forEach((card) => {
+                card.classList.toggle('is-linked-active', card.dataset.edition === config.linkedEdition);
+            });
+
+            if (typeof applyHeroLensMode === 'function') {
+                applyHeroLensMode(currentHeroLens);
+            }
+        };
+
+        heroLensButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                setHeroLensMode(button.dataset.heroLens);
+            });
+        });
+
+        const demoStage = document.getElementById('demo-stage');
+        if (demoStage) {
+            const centerPointerGlow = () => {
+                demoStage.style.setProperty('--pointer-x', '50%');
+                demoStage.style.setProperty('--pointer-y', '50%');
+            };
+
+            centerPointerGlow();
+
+            demoStage.addEventListener('pointermove', (event) => {
+                const rect = demoStage.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) * 100;
+                const y = ((event.clientY - rect.top) / rect.height) * 100;
+                demoStage.style.setProperty('--pointer-x', `${x}%`);
+                demoStage.style.setProperty('--pointer-y', `${y}%`);
+            });
+
+            demoStage.addEventListener('pointerleave', centerPointerGlow);
+        }
+
+        const demoControls = Array.from(document.querySelectorAll('.demo-control'));
+        const demoLab = document.getElementById('demo-lab');
+        const demoHud = {
+            status: document.getElementById('demo-status-label'),
+            distance: document.getElementById('demo-distance'),
+            chipPrimaryTitle: document.getElementById('demo-chip-primary-title'),
+            chipPrimaryCopy: document.getElementById('demo-chip-primary-copy'),
+            chipSecondaryTitle: document.getElementById('demo-chip-secondary-title'),
+            chipSecondaryCopy: document.getElementById('demo-chip-secondary-copy'),
+            chipTertiaryTitle: document.getElementById('demo-chip-tertiary-title'),
+            chipTertiaryCopy: document.getElementById('demo-chip-tertiary-copy'),
+            vibrationTitle: document.getElementById('demo-vibration-title'),
+            vibrationCopy: document.getElementById('demo-vibration-copy'),
+            aiTitle: document.getElementById('demo-ai-title'),
+            aiCopy: document.getElementById('demo-ai-copy')
+        };
+
+        const demoScenes = {
+            crosswalk: {
+                glow: '#6fe3ff',
+                glowRgb: '111, 227, 255',
+                status: 'Cruce alineado',
+                distance: '2.8 m',
+                chipPrimaryTitle: 'Cruce peatonal',
+                chipPrimaryCopy: 'Trayectoria centrada y libre',
+                chipSecondaryTitle: 'Patrón háptico',
+                chipSecondaryCopy: 'Pulsos simétricos suaves',
+                chipTertiaryTitle: 'Lectura IA',
+                chipTertiaryCopy: 'Confirma avance seguro y sostiene el eje',
+                vibrationTitle: 'Patrón háptico',
+                vibrationCopy: 'Pulsos cortos y equilibrados para mantener a la persona usuaria dentro del eje del cruce.',
+                aiTitle: 'Decisión de IA',
+                aiCopy: 'La montura detecta la zona más segura, reduce ruido y confirma un avance estable sin sobrecargar con audio.',
+                lensMode: 'clear',
+                baseYaw: -0.42,
+                basePitch: 0.1,
+                beamYaw: -0.06,
+                beamPitch: -0.22,
+                obstacleTint: 0x69dfff,
+                obstacles: [
+                    { x: -1.75, y: -0.68, z: 2.45, sx: 1, sy: 1, sz: 1, visible: true },
+                    { x: 0.05, y: -1.16, z: 3.05, sx: 1.7, sy: 0.4, sz: 1.8, visible: true },
+                    { x: 1.75, y: -0.68, z: 2.25, sx: 0.85, sy: 0.9, sz: 0.85, visible: true }
+                ]
+            },
+            obstacle: {
+                glow: '#ff9468',
+                glowRgb: '255, 148, 104',
+                status: 'Obstáculo lateral derecho',
+                distance: '1.4 m',
+                chipPrimaryTitle: 'Riesgo prioritario',
+                chipPrimaryCopy: 'Poste detectado a la derecha',
+                chipSecondaryTitle: 'Patrón háptico',
+                chipSecondaryCopy: 'Vibración intensa en lado derecho',
+                chipTertiaryTitle: 'Lectura IA',
+                chipTertiaryCopy: 'Sugiere ajuste inmediato de trayectoria',
+                vibrationTitle: 'Respuesta táctil',
+                vibrationCopy: 'La vibración aumenta en el lateral comprometido para advertir una corrección breve y contundente.',
+                aiTitle: 'Decisión de IA',
+                aiCopy: 'EyeNav eleva la alerta solo sobre el riesgo dominante para evitar saturación y priorizar una maniobra simple.',
+                lensMode: 'sun',
+                baseYaw: -0.28,
+                basePitch: 0.08,
+                beamYaw: 0.24,
+                beamPitch: -0.18,
+                obstacleTint: 0xff9468,
+                obstacles: [
+                    { x: 1.45, y: -0.55, z: 1.95, sx: 1.1, sy: 1.25, sz: 1.1, visible: true },
+                    { x: -0.55, y: -1.12, z: 3.2, sx: 0.9, sy: 0.35, sz: 1.2, visible: true },
+                    { x: 2.2, y: -0.7, z: 2.95, sx: 0.75, sy: 0.9, sz: 0.75, visible: true }
+                ]
+            },
+            turn: {
+                glow: '#8ff0c9',
+                glowRgb: '143, 240, 201',
+                status: 'Giro asistido a la izquierda',
+                distance: '2.1 m',
+                chipPrimaryTitle: 'Trayectoria sugerida',
+                chipPrimaryCopy: 'Apertura segura hacia la izquierda',
+                chipSecondaryTitle: 'Patrón háptico',
+                chipSecondaryCopy: 'Pulsos escalonados izquierda-centro',
+                chipTertiaryTitle: 'Lectura IA',
+                chipTertiaryCopy: 'Reacomoda el rumbo sin perder estabilidad',
+                vibrationTitle: 'Orientación táctil',
+                vibrationCopy: 'La secuencia vibra primero a la izquierda y luego recentra para guiar un giro limpio y progresivo.',
+                aiTitle: 'Decisión de IA',
+                aiCopy: 'La IA anticipa el cambio de dirección, abre una trayectoria más segura y modula la intensidad conforme se completa el giro.',
+                lensMode: 'clear',
+                baseYaw: -0.55,
+                basePitch: 0.14,
+                beamYaw: -0.38,
+                beamPitch: -0.2,
+                obstacleTint: 0x8ff0c9,
+                obstacles: [
+                    { x: -1.9, y: -0.62, z: 2.2, sx: 0.95, sy: 1.05, sz: 0.95, visible: true },
+                    { x: -0.95, y: -1.08, z: 3.3, sx: 1.25, sy: 0.28, sz: 1.7, visible: true },
+                    { x: 1.65, y: -0.74, z: 3.2, sx: 0.7, sy: 0.8, sz: 0.7, visible: true }
+                ]
+            }
+        };
+
+        let applyThreeScene = null;
+
+        const setDemoScene = (sceneName) => {
+            const scene = demoScenes[sceneName];
+            if (!scene) {
+                return;
+            }
+
+            demoControls.forEach((control) => {
+                const isActive = control.dataset.scene === sceneName;
+                control.classList.toggle('is-active', isActive);
+                control.setAttribute('aria-pressed', String(isActive));
+            });
+
+            if (demoLab) {
+                demoLab.style.setProperty('--demo-glow', scene.glow);
+                demoLab.style.setProperty('--demo-glow-rgb', scene.glowRgb);
+            }
+
+            Object.entries({
+                status: scene.status,
+                distance: scene.distance,
+                chipPrimaryTitle: scene.chipPrimaryTitle,
+                chipPrimaryCopy: scene.chipPrimaryCopy,
+                chipSecondaryTitle: scene.chipSecondaryTitle,
+                chipSecondaryCopy: scene.chipSecondaryCopy,
+                chipTertiaryTitle: scene.chipTertiaryTitle,
+                chipTertiaryCopy: scene.chipTertiaryCopy,
+                vibrationTitle: scene.vibrationTitle,
+                vibrationCopy: scene.vibrationCopy,
+                aiTitle: scene.aiTitle,
+                aiCopy: scene.aiCopy
+            }).forEach(([key, value]) => {
+                if (demoHud[key]) {
+                    demoHud[key].textContent = value;
+                }
+            });
+
+            if (typeof applyThreeScene === 'function') {
+                applyThreeScene(sceneName);
+            }
+        };
+
+        demoControls.forEach((control) => {
+            control.addEventListener('click', () => {
+                setDemoScene(control.dataset.scene);
+            });
+        });
+
+        const initializeHeroShowcase = () => {
+            const canvas = document.getElementById('heroEyeNavCanvas');
+
+            if (!canvas || !heroViewer || !window.THREE) {
+                return;
+            }
+
+            const THREE = window.THREE;
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+            const clock = new THREE.Clock();
+
+            camera.position.set(0, 0.52, 8.6);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.22);
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
+            const rimLight = new THREE.DirectionalLight(0x94dfff, 0.82);
+            const warmLight = new THREE.PointLight(0xffb28b, 0.8, 12);
+
+            keyLight.position.set(4.6, 5.2, 5.8);
+            rimLight.position.set(-5.2, 2.4, -3.8);
+            warmLight.position.set(0.2, 1.1, 3.8);
+
+            scene.add(ambientLight, keyLight, rimLight, warmLight);
+
+            const stageGroup = new THREE.Group();
+            const glassesGroup = new THREE.Group();
+
+            const frameMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x11161d,
+                roughness: 0.3,
+                metalness: 0.18,
+                clearcoat: 0.46,
+                clearcoatRoughness: 0.28
+            });
+
+            const clearLensMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0xa9d7e8,
+                transparent: true,
+                opacity: 0.24,
+                transmission: 0.92,
+                roughness: 0.04,
+                metalness: 0.05,
+                side: THREE.DoubleSide
+            });
+
+            const sunLensMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x1f2b37,
+                transparent: true,
+                opacity: 0.74,
+                transmission: 0.18,
+                roughness: 0.12,
+                metalness: 0.16,
+                side: THREE.DoubleSide
+            });
+
+            const createLensProfile = (Constructor, scaleX = 1, scaleY = 1) => {
+                const path = new Constructor();
+                path.moveTo(-1.02 * scaleX, 0.08 * scaleY);
+                path.quadraticCurveTo(-1.02 * scaleX, 0.62 * scaleY, -0.3 * scaleX, 0.7 * scaleY);
+                path.lineTo(0.46 * scaleX, 0.7 * scaleY);
+                path.quadraticCurveTo(1.06 * scaleX, 0.62 * scaleY, 1.0 * scaleX, 0.08 * scaleY);
+                path.lineTo(0.9 * scaleX, -0.36 * scaleY);
+                path.quadraticCurveTo(0.8 * scaleX, -0.7 * scaleY, 0.24 * scaleX, -0.74 * scaleY);
+                path.lineTo(-0.54 * scaleX, -0.74 * scaleY);
+                path.quadraticCurveTo(-1.04 * scaleX, -0.62 * scaleY, -1.02 * scaleX, -0.04 * scaleY);
+                path.quadraticCurveTo(-1.04 * scaleX, 0.04 * scaleY, -1.02 * scaleX, 0.08 * scaleY);
+                path.closePath();
+                return path;
+            };
+
+            const frameShape = createLensProfile(THREE.Shape, 1.12, 0.92);
+            frameShape.holes.push(createLensProfile(THREE.Path, 0.92, 0.74));
+
+            const frameGeometry = new THREE.ExtrudeGeometry(frameShape, {
+                depth: 0.18,
+                bevelEnabled: true,
+                bevelSegments: 3,
+                steps: 1,
+                bevelSize: 0.035,
+                bevelThickness: 0.035,
+                curveSegments: 30
+            });
+            frameGeometry.center();
+
+            const lensGeometry = new THREE.ExtrudeGeometry(createLensProfile(THREE.Shape, 0.92, 0.74), {
+                depth: 0.06,
+                bevelEnabled: true,
+                bevelSegments: 2,
+                steps: 1,
+                bevelSize: 0.012,
+                bevelThickness: 0.012,
+                curveSegments: 30
+            });
+            lensGeometry.center();
+
+            const leftRim = new THREE.Mesh(frameGeometry, frameMaterial);
+            leftRim.position.set(-1.18, 0.02, 0.02);
+
+            const rightRim = new THREE.Mesh(frameGeometry, frameMaterial);
+            rightRim.position.set(1.18, 0.02, 0.02);
+
+            const leftLens = new THREE.Mesh(lensGeometry, clearLensMaterial);
+            leftLens.position.set(-1.18, 0.02, 0.05);
+
+            const rightLens = new THREE.Mesh(lensGeometry, clearLensMaterial);
+            rightLens.position.set(1.18, 0.02, 0.05);
+
+            const bridgeCurve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-0.42, -0.08, 0.12),
+                new THREE.Vector3(0, -0.26, 0.14),
+                new THREE.Vector3(0.42, -0.08, 0.12)
+            ]);
+            const bridge = new THREE.Mesh(
+                new THREE.TubeGeometry(bridgeCurve, 28, 0.072, 14, false),
+                frameMaterial
+            );
+
+            const createTemple = (side) => {
+                const points = [
+                    new THREE.Vector3(1.92 * side, 0.24, 0.02),
+                    new THREE.Vector3(2.34 * side, 0.34, -0.04),
+                    new THREE.Vector3(2.82 * side, 0.56, -0.64),
+                    new THREE.Vector3(2.74 * side, 0.24, -1.78),
+                    new THREE.Vector3(2.48 * side, -0.14, -2.78)
+                ];
+                const curve = new THREE.CatmullRomCurve3(points);
+                const temple = new THREE.Mesh(new THREE.TubeGeometry(curve, 56, 0.09, 16, false), frameMaterial);
+
+                const hinge = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.18, 0.16), frameMaterial);
+                hinge.position.set(1.86 * side, 0.24, 0.04);
+                hinge.rotation.z = -0.05 * side;
+
+                const templeAssembly = new THREE.Group();
+                templeAssembly.add(temple, hinge);
+                return templeAssembly;
+            };
+
+            const leftTemple = createTemple(-1);
+            const rightTemple = createTemple(1);
+
+            const leftTempleAccent = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.08, 20), frameMaterial);
+            leftTempleAccent.rotation.z = Math.PI / 2;
+            leftTempleAccent.position.set(-1.88, 0.14, 0.12);
+
+            const sensorModule = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.16, 0.18), frameMaterial);
+            sensorModule.rotation.z = Math.PI / 2;
+            sensorModule.position.set(2.04, 0.32, 0.1);
+
+            const sensorCore = new THREE.Mesh(
+                new THREE.SphereGeometry(0.08, 24, 24),
+                new THREE.MeshStandardMaterial({
+                    color: 0x6fe3ff,
+                    emissive: 0x39b7d2,
+                    emissiveIntensity: 1.4
+                })
+            );
+            sensorCore.position.set(2.18, 0.32, 0.18);
+
+            const haloMaterial = new THREE.MeshBasicMaterial({
+                color: 0x6fe3ff,
+                transparent: true,
+                opacity: 0.12,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+
+            const halo = new THREE.Mesh(new THREE.CircleGeometry(2.12, 64), haloMaterial);
+            halo.position.set(0.1, 0.28, -0.88);
+
+            const backPlate = new THREE.Mesh(
+                new THREE.PlaneGeometry(6.1, 3.95),
+                new THREE.MeshPhysicalMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.16,
+                    roughness: 0.18,
+                    metalness: 0.04,
+                    clearcoat: 0.4,
+                    clearcoatRoughness: 0.24
+                })
+            );
+            backPlate.position.set(0.02, 0.34, -0.76);
+            backPlate.rotation.z = -0.03;
+
+            glassesGroup.add(
+                leftRim,
+                rightRim,
+                leftLens,
+                rightLens,
+                bridge,
+                leftTemple,
+                rightTemple,
+                leftTempleAccent,
+                sensorModule,
+                sensorCore
+            );
+
+            stageGroup.position.set(0, 0.74, 0);
+            stageGroup.scale.setScalar(0.73);
+            stageGroup.add(backPlate, halo, glassesGroup);
+            scene.add(stageGroup);
+
+            const viewState = {
+                pointerX: 0,
+                pointerY: 0,
+                dragging: false,
+                targetX: 0.05,
+                targetY: -0.76,
+                targetZ: -0.08,
+                basePitch: 0.05,
+                baseYaw: -0.76,
+                baseRoll: -0.08
+            };
+
+            const resizeRenderer = () => {
+                const bounds = canvas.getBoundingClientRect();
+                if (!bounds.width || !bounds.height) {
+                    return;
+                }
+
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.setSize(bounds.width, bounds.height, false);
+                camera.aspect = bounds.width / bounds.height;
+                camera.updateProjectionMatrix();
+            };
+
+            const resizeObserver = 'ResizeObserver' in window
+                ? new ResizeObserver(() => resizeRenderer())
+                : null;
+
+            resizeObserver?.observe(canvas);
+            window.addEventListener('resize', resizeRenderer);
+            resizeRenderer();
+
+            const releaseDrag = () => {
+                viewState.dragging = false;
+            };
+
+            canvas.addEventListener('pointerdown', (event) => {
+                viewState.dragging = true;
+                viewState.pointerX = event.clientX;
+                viewState.pointerY = event.clientY;
+                canvas.setPointerCapture(event.pointerId);
+            });
+
+            canvas.addEventListener('pointermove', (event) => {
+                if (!viewState.dragging) {
+                    return;
+                }
+
+                const deltaX = event.clientX - viewState.pointerX;
+                const deltaY = event.clientY - viewState.pointerY;
+
+                viewState.targetY += deltaX * 0.01;
+                viewState.targetX += deltaY * 0.0065;
+                viewState.targetX = Math.max(-0.18, Math.min(0.28, viewState.targetX));
+                viewState.pointerX = event.clientX;
+                viewState.pointerY = event.clientY;
+            });
+
+            canvas.addEventListener('pointerup', releaseDrag);
+            canvas.addEventListener('pointerleave', releaseDrag);
+
+            applyHeroLensMode = (modeName) => {
+                const config = heroLensModes[modeName] || heroLensModes.clear;
+                const lensMaterial = config.lensMode === 'sun' ? sunLensMaterial : clearLensMaterial;
+
+                leftLens.material = lensMaterial;
+                rightLens.material = lensMaterial;
+                haloMaterial.color.set(config.sensor);
+                sensorCore.material.color.set(config.sensor);
+                sensorCore.material.emissive.set(config.sensor);
+                viewState.baseYaw = config.baseYaw;
+                viewState.basePitch = config.basePitch;
+                viewState.baseRoll = config.baseRoll ?? -0.06;
+
+                if (!viewState.dragging) {
+                    viewState.targetY = config.baseYaw;
+                    viewState.targetX = config.basePitch;
+                    viewState.targetZ = viewState.baseRoll;
+                }
+            };
+
+            heroViewer.classList.add('is-ready');
+            setHeroLensMode(currentHeroLens);
+
+            const render = () => {
+                const time = clock.getElapsedTime();
+
+                if (!prefersReducedMotion) {
+                    const idleYaw = viewState.dragging
+                        ? viewState.targetY
+                        : viewState.baseYaw + Math.sin(time * 0.92) * 0.28;
+                    const idlePitch = viewState.dragging
+                        ? viewState.targetX
+                        : viewState.basePitch + Math.sin(time * 1.28) * 0.065;
+                    const idleRoll = viewState.dragging
+                        ? viewState.targetZ
+                        : viewState.baseRoll + Math.cos(time * 0.84) * 0.045;
+
+                    glassesGroup.position.y = Math.sin(time * 1.42) * 0.1;
+                    glassesGroup.position.x = Math.cos(time * 0.84) * 0.05;
+                    glassesGroup.rotation.x += (idlePitch - glassesGroup.rotation.x) * 0.11;
+                    glassesGroup.rotation.y += (idleYaw - glassesGroup.rotation.y) * 0.11;
+                    glassesGroup.rotation.z += (idleRoll - glassesGroup.rotation.z) * 0.08;
+                    halo.scale.setScalar(1 + Math.sin(time * 2.1) * 0.06);
+                    haloMaterial.opacity = 0.07 + (Math.sin(time * 3.5) + 1) * 0.03;
+                    backPlate.rotation.z = -0.03 + Math.sin(time * 0.52) * 0.01;
+                    sensorCore.material.emissiveIntensity = 1.2 + (Math.sin(time * 5) + 1) * 0.28;
+                } else {
+                    glassesGroup.rotation.x = viewState.basePitch;
+                    glassesGroup.rotation.y = viewState.baseYaw;
+                    glassesGroup.rotation.z = viewState.baseRoll;
+                }
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(render);
+            };
+
+            render();
+        };
+
+        const initializeEyeNavDemo = () => {
+            const canvas = document.getElementById('eyenavCanvas');
+
+            if (!canvas || !window.THREE) {
+                return;
+            }
+
+            const THREE = window.THREE;
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+            const clock = new THREE.Clock();
+
+            camera.position.set(0, 0.35, 7.4);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.35);
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+            const rimLight = new THREE.DirectionalLight(0x89dcff, 0.9);
+            const warmLight = new THREE.PointLight(0xff9966, 1.2, 12);
+
+            keyLight.position.set(5, 6, 6);
+            rimLight.position.set(-6, 2, -4);
+            warmLight.position.set(0, 1, 4);
+
+            scene.add(ambientLight, keyLight, rimLight, warmLight);
+
+            const glassesGroup = new THREE.Group();
+            const beamGroup = new THREE.Group();
+            const obstaclesGroup = new THREE.Group();
+
+            const frameMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x11161d,
+                roughness: 0.34,
+                metalness: 0.24,
+                clearcoat: 0.42,
+                clearcoatRoughness: 0.32
+            });
+
+            const clearLensMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0xa9d7e8,
+                transparent: true,
+                opacity: 0.24,
+                transmission: 0.92,
+                roughness: 0.04,
+                metalness: 0.05,
+                side: THREE.DoubleSide
+            });
+
+            const sunLensMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x1f2b37,
+                transparent: true,
+                opacity: 0.72,
+                transmission: 0.2,
+                roughness: 0.12,
+                metalness: 0.18,
+                side: THREE.DoubleSide
+            });
+
+            const beamShellMaterial = new THREE.MeshBasicMaterial({
+                color: 0x6fe3ff,
+                transparent: true,
+                opacity: 0.1,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+
+            const beamCoreMaterial = new THREE.MeshBasicMaterial({
+                color: 0x6fe3ff,
+                transparent: true,
+                opacity: 0.18,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+
+            const ringMaterials = [];
+            const ringMeshes = [];
+            const obstacleMeshes = [];
+
+            const createLensProfile = (Constructor, scaleX = 1, scaleY = 1) => {
+                const path = new Constructor();
+                path.moveTo(-1.02 * scaleX, 0.08 * scaleY);
+                path.quadraticCurveTo(-1.02 * scaleX, 0.62 * scaleY, -0.3 * scaleX, 0.7 * scaleY);
+                path.lineTo(0.46 * scaleX, 0.7 * scaleY);
+                path.quadraticCurveTo(1.06 * scaleX, 0.62 * scaleY, 1.0 * scaleX, 0.08 * scaleY);
+                path.lineTo(0.9 * scaleX, -0.36 * scaleY);
+                path.quadraticCurveTo(0.8 * scaleX, -0.7 * scaleY, 0.24 * scaleX, -0.74 * scaleY);
+                path.lineTo(-0.54 * scaleX, -0.74 * scaleY);
+                path.quadraticCurveTo(-1.04 * scaleX, -0.62 * scaleY, -1.02 * scaleX, -0.04 * scaleY);
+                path.quadraticCurveTo(-1.04 * scaleX, 0.04 * scaleY, -1.02 * scaleX, 0.08 * scaleY);
+                path.closePath();
+                return path;
+            };
+
+            const frameShape = createLensProfile(THREE.Shape, 1.12, 0.92);
+            frameShape.holes.push(createLensProfile(THREE.Path, 0.92, 0.74));
+
+            const frameGeometry = new THREE.ExtrudeGeometry(frameShape, {
+                depth: 0.18,
+                bevelEnabled: true,
+                bevelSegments: 3,
+                steps: 1,
+                bevelSize: 0.035,
+                bevelThickness: 0.035,
+                curveSegments: 30
+            });
+            frameGeometry.center();
+
+            const lensGeometry = new THREE.ExtrudeGeometry(createLensProfile(THREE.Shape, 0.92, 0.74), {
+                depth: 0.06,
+                bevelEnabled: true,
+                bevelSegments: 2,
+                steps: 1,
+                bevelSize: 0.012,
+                bevelThickness: 0.012,
+                curveSegments: 30
+            });
+            lensGeometry.center();
+
+            const beamShellGeometry = new THREE.CylinderGeometry(0.02, 1.18, 4.1, 32, 1, true);
+            const beamCoreGeometry = new THREE.CylinderGeometry(0.02, 0.36, 3.45, 24, 1, true);
+            const floorGeometry = new THREE.CircleGeometry(5.1, 72);
+
+            const leftRim = new THREE.Mesh(frameGeometry, frameMaterial);
+            leftRim.position.set(-1.18, 0.02, 0.02);
+
+            const rightRim = new THREE.Mesh(frameGeometry, frameMaterial);
+            rightRim.position.set(1.18, 0.02, 0.02);
+
+            const leftLens = new THREE.Mesh(lensGeometry, clearLensMaterial);
+            leftLens.position.set(-1.18, 0.02, 0.05);
+
+            const rightLens = new THREE.Mesh(lensGeometry, clearLensMaterial);
+            rightLens.position.set(1.18, 0.02, 0.05);
+
+            const bridgeCurve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-0.42, -0.08, 0.12),
+                new THREE.Vector3(0, -0.26, 0.14),
+                new THREE.Vector3(0.42, -0.08, 0.12)
+            ]);
+            const bridge = new THREE.Mesh(
+                new THREE.TubeGeometry(bridgeCurve, 28, 0.072, 14, false),
+                frameMaterial
+            );
+
+            const createTemple = (side) => {
+                const points = [
+                    new THREE.Vector3(1.92 * side, 0.24, 0.02),
+                    new THREE.Vector3(2.34 * side, 0.34, -0.04),
+                    new THREE.Vector3(2.82 * side, 0.56, -0.64),
+                    new THREE.Vector3(2.74 * side, 0.24, -1.78),
+                    new THREE.Vector3(2.48 * side, -0.14, -2.78)
+                ];
+                const curve = new THREE.CatmullRomCurve3(points);
+                const temple = new THREE.Mesh(new THREE.TubeGeometry(curve, 56, 0.09, 16, false), frameMaterial);
+
+                const hinge = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.18, 0.16), frameMaterial);
+                hinge.position.set(1.86 * side, 0.24, 0.04);
+                hinge.rotation.z = -0.05 * side;
+
+                const templeAssembly = new THREE.Group();
+                templeAssembly.add(temple, hinge);
+                return templeAssembly;
+            };
+
+            const leftTemple = createTemple(-1);
+            const rightTemple = createTemple(1);
+
+            const leftTempleAccent = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.08, 20), frameMaterial);
+            leftTempleAccent.rotation.z = Math.PI / 2;
+            leftTempleAccent.position.set(-1.88, 0.14, 0.12);
+
+            const sensorModule = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.16, 0.18), frameMaterial);
+            sensorModule.rotation.z = Math.PI / 2;
+            sensorModule.position.set(2.04, 0.32, 0.1);
+
+            const sensorCore = new THREE.Mesh(
+                new THREE.SphereGeometry(0.08, 24, 24),
+                new THREE.MeshStandardMaterial({
+                    color: 0x6fe3ff,
+                    emissive: 0x39b7d2,
+                    emissiveIntensity: 1.7
+                })
+            );
+            sensorCore.position.set(2.18, 0.32, 0.18);
+
+            const beamShell = new THREE.Mesh(beamShellGeometry, beamShellMaterial);
+            beamShell.rotation.x = Math.PI / 2;
+            beamShell.position.z = 2.08;
+
+            const beamCore = new THREE.Mesh(beamCoreGeometry, beamCoreMaterial);
+            beamCore.rotation.x = Math.PI / 2;
+            beamCore.position.z = 1.74;
+
+            beamGroup.position.set(2.18, 0.12, 0.24);
+            beamGroup.add(beamShell, beamCore);
+
+            for (let index = 0; index < 3; index += 1) {
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x6fe3ff,
+                    transparent: true,
+                    opacity: 0.18,
+                    side: THREE.DoubleSide,
+                    depthWrite: false
+                });
+                const ring = new THREE.Mesh(new THREE.RingGeometry(0.18, 0.22, 64), ringMaterial);
+                ring.position.z = 1.2 + index * 0.7;
+                beamGroup.add(ring);
+                ringMaterials.push(ringMaterial);
+                ringMeshes.push(ring);
+            }
+
+            const floor = new THREE.Mesh(
+                floorGeometry,
+                new THREE.MeshBasicMaterial({
+                    color: 0x6fe3ff,
+                    transparent: true,
+                    opacity: 0.04,
+                    side: THREE.DoubleSide,
+                    depthWrite: false
+                })
+            );
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = -1.42;
+
+            const createObstacle = (geometry) => {
+                const material = new THREE.MeshStandardMaterial({
+                    color: 0x6fe3ff,
+                    roughness: 0.36,
+                    metalness: 0.08,
+                    transparent: true,
+                    opacity: 0.26,
+                    emissive: 0x132733,
+                    emissiveIntensity: 0.24
+                });
+
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.userData.baseY = -0.8;
+                obstaclesGroup.add(mesh);
+                obstacleMeshes.push(mesh);
+                return mesh;
+            };
+
+            createObstacle(new THREE.BoxGeometry(0.28, 1.75, 0.28));
+            createObstacle(new THREE.BoxGeometry(0.95, 0.18, 1.22));
+            createObstacle(new THREE.BoxGeometry(0.34, 1.45, 0.34));
+
+            glassesGroup.add(
+                leftRim,
+                rightRim,
+                leftLens,
+                rightLens,
+                bridge,
+                leftTemple,
+                rightTemple,
+                leftTempleAccent,
+                sensorModule,
+                sensorCore,
+                beamGroup
+            );
+
+            scene.add(floor, glassesGroup, obstaclesGroup);
+
+            const viewState = {
+                orbitX: 0.14,
+                orbitY: -0.42,
+                pointerX: 0,
+                pointerY: 0,
+                dragging: false,
+                targetX: 0.14,
+                targetY: -0.42,
+                basePitch: 0.1,
+                baseYaw: -0.42,
+                beamPitch: -0.22,
+                beamYaw: -0.06
+            };
+
+            const resizeRenderer = () => {
+                const bounds = canvas.getBoundingClientRect();
+                if (!bounds.width || !bounds.height) {
+                    return;
+                }
+
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.setSize(bounds.width, bounds.height, false);
+                camera.aspect = bounds.width / bounds.height;
+                camera.updateProjectionMatrix();
+            };
+
+            const resizeObserver = 'ResizeObserver' in window
+                ? new ResizeObserver(() => resizeRenderer())
+                : null;
+
+            resizeObserver?.observe(canvas);
+            window.addEventListener('resize', resizeRenderer);
+            resizeRenderer();
+
+            const releaseDrag = () => {
+                viewState.dragging = false;
+            };
+
+            canvas.addEventListener('pointerdown', (event) => {
+                viewState.dragging = true;
+                viewState.pointerX = event.clientX;
+                viewState.pointerY = event.clientY;
+                canvas.setPointerCapture(event.pointerId);
+            });
+
+            canvas.addEventListener('pointermove', (event) => {
+                if (viewState.dragging) {
+                    const deltaX = event.clientX - viewState.pointerX;
+                    const deltaY = event.clientY - viewState.pointerY;
+
+                    viewState.targetY += deltaX * 0.008;
+                    viewState.targetX += deltaY * 0.006;
+                    viewState.targetX = Math.max(-0.25, Math.min(0.42, viewState.targetX));
+                    viewState.pointerX = event.clientX;
+                    viewState.pointerY = event.clientY;
+                }
+            });
+
+            canvas.addEventListener('pointerup', releaseDrag);
+            canvas.addEventListener('pointerleave', releaseDrag);
+
+            applyThreeScene = (sceneName) => {
+                const config = demoScenes[sceneName];
+                if (!config) {
+                    return;
+                }
+
+                demoLab?.style.setProperty('--demo-glow', config.glow);
+                beamShellMaterial.color.set(config.obstacleTint);
+                beamCoreMaterial.color.set(config.obstacleTint);
+                ringMaterials.forEach((material) => material.color.set(config.obstacleTint));
+                sensorCore.material.color.set(config.obstacleTint);
+                sensorCore.material.emissive.set(config.obstacleTint);
+
+                const lensMaterial = config.lensMode === 'sun' ? sunLensMaterial : clearLensMaterial;
+                leftLens.material = lensMaterial;
+                rightLens.material = lensMaterial;
+
+                viewState.baseYaw = config.baseYaw;
+                viewState.basePitch = config.basePitch;
+                viewState.targetY = config.baseYaw;
+                viewState.targetX = config.basePitch;
+                viewState.beamYaw = config.beamYaw;
+                viewState.beamPitch = config.beamPitch;
+
+                obstacleMeshes.forEach((mesh, index) => {
+                    const obstacle = config.obstacles[index];
+                    if (!obstacle || obstacle.visible === false) {
+                        mesh.visible = false;
+                        return;
+                    }
+
+                    mesh.visible = true;
+                    mesh.position.set(obstacle.x, obstacle.y, obstacle.z);
+                    mesh.scale.set(obstacle.sx, obstacle.sy, obstacle.sz);
+                    mesh.userData.baseY = obstacle.y;
+                    mesh.material.color.set(config.obstacleTint);
+                    mesh.material.emissive.set(config.obstacleTint);
+                    mesh.material.emissiveIntensity = 0.12;
+                    mesh.material.opacity = index === 1 ? 0.18 : 0.28;
+                });
+            };
+
+            applyThreeScene('crosswalk');
+
+            const render = () => {
+                const time = clock.getElapsedTime();
+
+                if (!prefersReducedMotion) {
+                    glassesGroup.position.y = -0.08 + Math.sin(time * 1.6) * 0.05;
+                    glassesGroup.rotation.x += (viewState.targetX - glassesGroup.rotation.x) * 0.08;
+                    glassesGroup.rotation.y += (viewState.targetY - glassesGroup.rotation.y) * 0.08;
+                    beamGroup.rotation.x += (viewState.beamPitch - beamGroup.rotation.x) * 0.1;
+                    beamGroup.rotation.y += (viewState.beamYaw - beamGroup.rotation.y) * 0.1;
+                    beamShell.scale.x = 1 + Math.sin(time * 3.4) * 0.05;
+                    beamCore.scale.x = 1 + Math.sin(time * 4.1 + 0.5) * 0.08;
+                    sensorCore.material.emissiveIntensity = 1.25 + (Math.sin(time * 5.2) + 1) * 0.34;
+
+                    ringMeshes.forEach((ring, index) => {
+                        const pulse = (time * 1.8 + index * 0.55) % 1.8;
+                        const scale = 0.92 + pulse * 0.58;
+                        ring.scale.setScalar(scale);
+                        ring.material.opacity = Math.max(0, 0.22 - pulse * 0.12);
+                        ring.position.z = 1.12 + index * 0.7 + pulse * 0.26;
+                    });
+
+                    obstacleMeshes.forEach((mesh, index) => {
+                        if (!mesh.visible) {
+                            return;
+                        }
+
+                        mesh.position.y = mesh.userData.baseY + Math.sin(time * 1.5 + index) * 0.04;
+                        mesh.rotation.y += 0.008;
+                    });
+                }
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(render);
+            };
+
+            render();
+        };
+
+        setHeroLensMode('clear');
+        initializeHeroShowcase();
+        initializeEyeNavDemo();
+        setDemoScene('crosswalk');
+    </script>
+</body>
+
+</html>
