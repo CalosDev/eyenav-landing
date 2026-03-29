@@ -508,6 +508,58 @@
             transform: scale(0.97);
         }
 
+        .stage-notice {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 18px;
+            z-index: 4;
+            display: none;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(12, 20, 28, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 20px 36px -30px rgba(8, 13, 19, 0.85);
+            backdrop-filter: blur(12px);
+            pointer-events: none;
+        }
+
+        .stage-notice::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            flex: 0 0 10px;
+            margin-top: 4px;
+            border-radius: 50%;
+            background: rgba(var(--hero-tone, 111, 227, 255), 0.96);
+            box-shadow: 0 0 0 7px rgba(var(--hero-tone, 111, 227, 255), 0.12);
+        }
+
+        .stage-notice-copy {
+            display: grid;
+            gap: 4px;
+        }
+
+        .stage-notice-copy strong {
+            color: #f7fbff;
+            font-family: "Sora", sans-serif;
+            font-size: 0.84rem;
+            letter-spacing: -0.03em;
+        }
+
+        .stage-notice-copy span {
+            color: rgba(226, 236, 244, 0.82);
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+
+        .hero-viewer.has-stage-notice .stage-notice,
+        .demo-stage.has-stage-notice .stage-notice {
+            display: flex;
+        }
+
         #heroEyeNavCanvas {
             position: absolute;
             inset: 0;
@@ -1530,7 +1582,26 @@
             animation-delay: -2.2s;
         }
 
+        .demo-stage-fallback {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 40px 44px 28px;
+            filter: drop-shadow(0 22px 38px rgba(10, 17, 24, 0.42));
+            transition: opacity 0.34s ease, transform 0.34s ease;
+        }
+
+        .demo-stage.is-ready .demo-stage-fallback {
+            opacity: 0;
+            transform: scale(0.97);
+        }
+
         #eyenavCanvas {
+            position: relative;
+            z-index: 2;
             display: block;
             width: 100%;
             height: 100%;
@@ -2111,6 +2182,12 @@
                                 alt="Vitrina tridimensional de EyeNav Clear">
                             <canvas id="heroEyeNavCanvas"
                                 aria-label="Visor tridimensional interactivo de EyeNav"></canvas>
+                            <div class="stage-notice" id="hero-stage-notice" role="status" aria-live="polite">
+                                <div class="stage-notice-copy">
+                                    <strong id="hero-stage-notice-title">Visor adaptado</strong>
+                                    <span id="hero-stage-notice-text">Mostrando una versión compatible del visor.</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="hero-viewer-caption">
                             <div class="hero-viewer-copy">
@@ -2360,7 +2437,15 @@
                                     <div class="demo-scanline" aria-hidden="true"></div>
                                     <div class="demo-pulse pulse-a" aria-hidden="true"></div>
                                     <div class="demo-pulse pulse-b" aria-hidden="true"></div>
+                                    <img class="demo-stage-fallback" src="image/WhatsApp-Image-2026-03-28-at-2-29-03-AM.webp"
+                                        alt="Vista conceptual de EyeNav para la simulación">
                                     <canvas id="eyenavCanvas" aria-label="Simulación tridimensional de EyeNav"></canvas>
+                                    <div class="stage-notice" id="demo-stage-notice" role="status" aria-live="polite">
+                                        <div class="stage-notice-copy">
+                                            <strong id="demo-stage-notice-title">Simulación adaptada</strong>
+                                            <span id="demo-stage-notice-text">Mostrando una versión compatible de la demo.</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -2514,7 +2599,7 @@
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="vendor/three.min.js"></script>
     <script>
         const header = document.getElementById('site-header');
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -2564,11 +2649,31 @@
         const heroFallbackImage = document.querySelector('.hero-device-fallback');
         const heroLensButtons = Array.from(document.querySelectorAll('.hero-mode-button'));
         const heroEditionCards = Array.from(document.querySelectorAll('.edition-card[data-edition]'));
+        const heroStageNotice = document.getElementById('hero-stage-notice');
         const heroLensHud = {
             kicker: document.getElementById('hero-version-kicker'),
             title: document.getElementById('hero-version-title'),
             copy: document.getElementById('hero-version-copy'),
             status: document.getElementById('hero-version-status')
+        };
+
+        const setStageNotice = (container, notice, title, message) => {
+            if (!container || !notice) {
+                return;
+            }
+
+            const titleNode = notice.querySelector('strong');
+            const textNode = notice.querySelector('span');
+
+            if (titleNode) {
+                titleNode.textContent = title || '';
+            }
+
+            if (textNode) {
+                textNode.textContent = message || '';
+            }
+
+            container.classList.toggle('has-stage-notice', Boolean(message));
         };
 
         const heroLensModes = {
@@ -2677,6 +2782,7 @@
 
         const demoControls = Array.from(document.querySelectorAll('.demo-control'));
         const demoLab = document.getElementById('demo-lab');
+        const demoStageNotice = document.getElementById('demo-stage-notice');
         const demoHud = {
             status: document.getElementById('demo-status-label'),
             distance: document.getElementById('demo-distance'),
@@ -2828,12 +2934,33 @@
         const initializeHeroShowcase = () => {
             const canvas = document.getElementById('heroEyeNavCanvas');
 
-            if (!canvas || !heroViewer || !window.THREE) {
+            if (!canvas || !heroViewer) {
+                return;
+            }
+
+            if (!window.THREE) {
+                setStageNotice(
+                    heroViewer,
+                    heroStageNotice,
+                    'Visor en modo imagen',
+                    'El motor 3D no pudo cargarse. Dejamos una vitrina estática para mantener la presentación estable.'
+                );
                 return;
             }
 
             const THREE = window.THREE;
-            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            let renderer;
+            try {
+                renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            } catch (error) {
+                setStageNotice(
+                    heroViewer,
+                    heroStageNotice,
+                    'Visor en modo imagen',
+                    'Este navegador no habilitó WebGL. Mostramos una vista estática compatible del producto.'
+                );
+                return;
+            }
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
             const clock = new THREE.Clock();
@@ -3112,6 +3239,16 @@
 
             heroViewer.classList.add('is-ready');
             setHeroLensMode(currentHeroLens);
+            if (prefersReducedMotion) {
+                setStageNotice(
+                    heroViewer,
+                    heroStageNotice,
+                    'Movimiento reducido',
+                    'Tu dispositivo pidió menos animación. Dejamos el visor 3D estable para respetar esa preferencia.'
+                );
+            } else {
+                setStageNotice(heroViewer, heroStageNotice, '', '');
+            }
 
             const render = () => {
                 const time = clock.getElapsedTime();
@@ -3152,12 +3289,33 @@
         const initializeEyeNavDemo = () => {
             const canvas = document.getElementById('eyenavCanvas');
 
-            if (!canvas || !window.THREE) {
+            if (!canvas || !demoStage) {
+                return;
+            }
+
+            if (!window.THREE) {
+                setStageNotice(
+                    demoStage,
+                    demoStageNotice,
+                    'Demo en modo compatible',
+                    'La simulación 3D no pudo cargarse aquí. Dejamos una vista estática para que el pitch siga viéndose bien.'
+                );
                 return;
             }
 
             const THREE = window.THREE;
-            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            let renderer;
+            try {
+                renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            } catch (error) {
+                setStageNotice(
+                    demoStage,
+                    demoStageNotice,
+                    'Demo en modo compatible',
+                    'Este navegador no habilitó WebGL. Mostramos una versión fija de la demo para no dejar el bloque vacío.'
+                );
+                return;
+            }
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
             const clock = new THREE.Clock();
@@ -3515,6 +3673,17 @@
             };
 
             applyThreeScene('crosswalk');
+            demoStage.classList.add('is-ready');
+            if (prefersReducedMotion) {
+                setStageNotice(
+                    demoStage,
+                    demoStageNotice,
+                    'Movimiento reducido',
+                    'La demo se muestra con menos animación porque el navegador pidió una experiencia más estable.'
+                );
+            } else {
+                setStageNotice(demoStage, demoStageNotice, '', '');
+            }
 
             const render = () => {
                 const time = clock.getElapsedTime();
